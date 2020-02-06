@@ -1,14 +1,13 @@
 #!/usr/bin/python
 
 import os
-#import re
+# import re
 import getopt
 import sys
 
 from datetime import datetime
 
 from jLangFile import *
-
 
 HELP_MSG = """
 findTranslationIds 
@@ -51,266 +50,263 @@ ToDo:
   
 """
 
-#-------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------
 LeaveOut_01 = False
 LeaveOut_02 = False
 LeaveOut_03 = False
 LeaveOut_04 = False
 LeaveOut_05 = False
 
-#-------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------
 
 # ================================================================================
 # findTranslationIds
 # ================================================================================
 
-def findTranslationIds (SourceFile, StandardFile, SysFile):
-	try:
-		print ('*********************************************************')
-		print ('findTranslationIds')
-		print ('SourceFile: ' + SourceFile)
-		print ('StandardFile: ' + StandardFile)
-		print ('SysFile: ' + SysFile)
-		print ('---------------------------------------------------------')
-		
-		#---------------------------------------------
-		# check input
-		#---------------------------------------------
+def findTranslationIds(SourceFile, StandardFile, SysFile):
+    try:
+        print('*********************************************************')
+        print('findTranslationIds')
+        print('SourceFile: ' + SourceFile)
+        print('StandardFile: ' + StandardFile)
+        print('SysFile: ' + SysFile)
+        print('---------------------------------------------------------')
 
-		if SourceFile == '':
-			print('***************************************************')
-			print('!!! Source file (SourceFile) name is mandatory !!!')
-			print('***************************************************')
-			print(HELP_MSG)
-			Wait4Key()
-			sys.exit(1)
+        # ---------------------------------------------
+        # check input
+        # ---------------------------------------------
 
-		if not testFile(SourceFile):
-			print('***************************************************')
-			print('!!! Source file (LeftPath) path not found !!! ? -l ' + SourceFile + ' ?')
-			print('***************************************************')
-			print(HELP_MSG)
-			Wait4Key()
-			sys.exit(2)
+        if SourceFile == '':
+            print('***************************************************')
+            print('!!! Source file (SourceFile) name is mandatory !!!')
+            print('***************************************************')
+            print(HELP_MSG)
+            Wait4Key()
+            sys.exit(1)
 
-		# --------------------------------------------------------------------
+        if not testFile(SourceFile):
+            print('***************************************************')
+            print('!!! Source file (LeftPath) path not found !!! ? -l ' + SourceFile + ' ?')
+            print('***************************************************')
+            print(HELP_MSG)
+            Wait4Key()
+            sys.exit(2)
 
-		if StandardFile == '':
-			print('***************************************************')
-			print('!!! Source file (StandardFile) name is mandatory !!!')
-			print('***************************************************')
-			print(HELP_MSG)
-			Wait4Key()
-			sys.exit(3)
+        # --------------------------------------------------------------------
 
-		if not testFile(StandardFile):
-			print('***************************************************')
-			print('!!! Source file (StandardFile) path not found !!! ? -l ' + StandardFile + ' ?')
-			print('***************************************************')
-			print(HELP_MSG)
-#			Wait4Key()
-			sys.exit(4)
+        if StandardFile == '':
+            print('***************************************************')
+            print('!!! Source file (StandardFile) name is mandatory !!!')
+            print('***************************************************')
+            print(HELP_MSG)
+            Wait4Key()
+            sys.exit(3)
 
-		# --------------------------------------------------------------------
+        if not testFile(StandardFile):
+            print('***************************************************')
+            print('!!! Source file (StandardFile) path not found !!! ? -l ' + StandardFile + ' ?')
+            print('***************************************************')
+            print(HELP_MSG)
+            #			Wait4Key()
+            sys.exit(4)
 
-		if SysFile == '' :
-			print ('***************************************************')
-			print ('!!! Destination file (RightPath) name is mandatory !!!')
-			print ('***************************************************')
-			print (HELP_MSG)
-			Wait4Key ()
-			sys.exit(5)
-			
-			
-		if not testFile(SysFile):
-			print ('***************************************************')
-			print ('!!! Destination file (RightPath) path not found !!! ? -r ' + SysFile + ' ?')
-			print ('***************************************************')
-			print (HELP_MSG)
-			Wait4Key ()
-			sys.exit(6)
-			
-		#--------------------------------------------------------------------
-		# read all files
-		#--------------------------------------------------------------------
+        # --------------------------------------------------------------------
 
-		master = jLangFile (SourceFile)
-		standard = jLangFile (StandardFile)
-		system = jLangFile (SysFile)
+        if SysFile == '':
+            print('***************************************************')
+            print('!!! Destination file (RightPath) name is mandatory !!!')
+            print('***************************************************')
+            print(HELP_MSG)
+            Wait4Key()
+            sys.exit(5)
 
-		#print ('LeftPath: ' + LeftPath)
-		#print ('RightPath: ' + RightPath)
-		#print ('---------------------------------------------------------')
-		
-		#--------------------------------------------------------------------
-		# import translations into standard
-		#--------------------------------------------------------------------
-		
-		translations = standard.translations()
+        if not testFile(SysFile):
+            print('***************************************************')
+            print('!!! Destination file (RightPath) path not found !!! ? -r ' + SysFile + ' ?')
+            print('***************************************************')
+            print(HELP_MSG)
+            Wait4Key()
+            sys.exit(6)
 
-		isChanged = False
+        # --------------------------------------------------------------------
+        # read all files
+        # --------------------------------------------------------------------
 
-		# check all translations
-		for transId, translation in translations.items():
-			# translation not defined
-			if not translation:
-				# check source
-				srcTranslation = master.get (transId)
+        master = jLangFile(SourceFile)
+        standard = jLangFile(StandardFile)
+        system = jLangFile(SysFile)
 
-				# master translation existing <ß
-				if (srcTranslation):
-					standard.set (transId, srcTranslation)
+        # print ('LeftPath: ' + LeftPath)
+        # print ('RightPath: ' + RightPath)
+        # print ('---------------------------------------------------------')
 
-					isChanged = True
+        # --------------------------------------------------------------------
+        # import translations into standard
+        # --------------------------------------------------------------------
 
-		if (isChanged):
-			standard.safeToFile ()
+        translations = standard.translations()
 
-		#--------------------------------------------------------------------
-		# import translations into sys file
-		#--------------------------------------------------------------------
+        isChanged = False
 
-		translations = system.translations()
+        # check all translations
+        for transId, translation in translations.items():
+            # translation not defined
+            if not translation:
+                # check source
+                srcTranslation = master.get(transId)
 
-		isChanged = False
+                # master translation existing <ß
+                if (srcTranslation):
+                    standard.set(transId, srcTranslation)
 
-		# check all translations
-		for transId, translation in translations.items():
-			# translation not defined
-			if not translation:
-				# check source
-				srcTranslation = master.get(transId)
+                    isChanged = True
 
-				# master translation existing <ß
-				if (srcTranslation):
-					system.set(transId, srcTranslation)
+        if (isChanged):
+            standard.safeToFile()
 
-					isChanged = True
+        # --------------------------------------------------------------------
+        # import translations into sys file
+        # --------------------------------------------------------------------
 
-		if (isChanged):
-			system.safeToFile()
+        translations = system.translations()
 
-	except Exception as ex:
-		print(ex)
+        isChanged = False
 
-	# --------------------------------------------------------------------
-	#
-	# --------------------------------------------------------------------
+        # check all translations
+        for transId, translation in translations.items():
+            # translation not defined
+            if not translation:
+                # check source
+                srcTranslation = master.get(transId)
 
-	finally:
-		print ('exit findTranslationIds')
+                # master translation existing <ß
+                if (srcTranslation):
+                    system.set(transId, srcTranslation)
 
+                    isChanged = True
 
-	return
+        if (isChanged):
+            system.safeToFile()
+
+    except Exception as ex:
+        print(ex)
+
+    # --------------------------------------------------------------------
+    #
+    # --------------------------------------------------------------------
+
+    finally:
+        print('exit findTranslationIds')
+
+    return
 
 
 ##-------------------------------------------------------------------------------
 
-def Wait4Key():		
-	try:
-		input("Press enter to continue")
-	except SyntaxError:
-		pass		
-			
+def Wait4Key():
+    try:
+        input("Press enter to continue")
+    except SyntaxError:
+        pass
+
 
 def testFile(file):
-	exists = os.path.isfile(file)
-	if not exists:
-		print ("Error: File does not exist: " + file)
-	return exists
+    exists = os.path.isfile(file)
+    if not exists:
+        print("Error: File does not exist: " + file)
+    return exists
+
 
 def testDir(directory):
-	exists = os.path.isdir(directory)
-	if not exists:
-		print ("Error: Directory does not exist: " + directory)
-	return exists
+    exists = os.path.isdir(directory)
+    if not exists:
+        print("Error: Directory does not exist: " + directory)
+    return exists
+
 
 def print_header(start):
+    print('------------------------------------------')
+    print('Command line:', end='')
+    for s in sys.argv:
+        print(s, end='')
 
-	print ('------------------------------------------')
-	print ('Command line:', end='')
-	for s in sys.argv:
-		print (s, end='')
-	
-	print ('')
-	print ('Start time:   ' + start.ctime())
-	print ('------------------------------------------')
+    print('')
+    print('Start time:   ' + start.ctime())
+    print('------------------------------------------')
+
 
 def print_end(start):
-	now = datetime.today()
-	print ('')
-	print ('End time:               ' + now.ctime())
-	difference = now-start
-	print ('Time of run:            ', difference)
-	#print ('Time of run in seconds: ', difference.total_seconds())
+    now = datetime.today()
+    print('')
+    print('End time:               ' + now.ctime())
+    difference = now - start
+    print('Time of run:            ', difference)
+
+
+# print ('Time of run in seconds: ', difference.total_seconds())
 
 # ================================================================================
 #   main (used from command line)
 # ================================================================================
-   
+
 if __name__ == '__main__':
-	optlist, args = getopt.getopt(sys.argv[1:], 's:f:y:12345h')
-	
-#	SourceFile = ''
-#	StandardFile = ''
-#	SysFile = ''
-	ComponentPrefix = "COM_RSGALLERY2"
-	StandardFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.ini'
-	SysFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.sys.ini'
+    optlist, args = getopt.getopt(sys.argv[1:], 's:f:y:12345h')
 
+    #	SourceFile = ''
+    #	StandardFile = ''
+    #	SysFile = ''
+    ComponentPrefix = "COM_RSGALLERY2"
+    StandardFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.ini'
+    SysFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.sys.ini'
 
+    for i, j in optlist:
+        if i == "-c":
+            ComponentPrefix = j
+        if i == "-f":
+            StandardFile = j
+        if i == "-y":
+            SysFile = j
 
-	for i, j in optlist:
-		if i == "-c":
-			ComponentPrefix = j
-		if i == "-f":
-			StandardFile = j
-		if i == "-y":
-			SysFile = j
+        if i == "-h":
+            print(HELP_MSG)
+            sys.exit(0)
 
-		if i == "-h":
-			print (HELP_MSG)
-			sys.exit(0)
+        if i == "-1":
+            LeaveOut_01 = True
+            print("LeaveOut_01")
+        if i == "-2":
+            LeaveOut_02 = True
+            print("LeaveOut__02")
+        if i == "-3":
+            LeaveOut_03 = True
+            print("LeaveOut__03")
+        if i == "-4":
+            LeaveOut_04 = True
+            print("LeaveOut__04")
+        if i == "-5":
+            LeaveOut_05 = True
+            print("LeaveOut__05")
 
-		if i == "-1":
-			LeaveOut_01 = True
-			print ("LeaveOut_01")
-		if i == "-2":
-			LeaveOut_02 = True
-			print ("LeaveOut__02")
-		if i == "-3":
-			LeaveOut_03 = True
-			print ("LeaveOut__03")
-		if i == "-4":
-			LeaveOut_04 = True
-			print ("LeaveOut__04")
-		if i == "-5":
-			LeaveOut_05 = True
-			print ("LeaveOut__05")
-            
-            
     # iterate over args and create a path list        
 
+    # dummy test constant
+    searchPaths = [
+        "f:\Entwickl\rsgallery2\RSGallery2_J-4\administrator\components\com_rsgallery2",
+        "f:\Entwickl\rsgallery2\RSGallery2_J-4\administrator\components\com_rsgallery2\language\en-GB\en-GB.com_rsgallery2.ini",
+        "f:\Entwickl\rsgallery2\RSGallery2_J-4\components\com_rsgallery2"
+    ]
 
-	searchPaths = [
-		
-	]
+    if (len(args)):
+        searchPaths = []
 
+    for searchPath in args:
+        searchPaths.append(searchPath)
 
+start = datetime.today()
 
-    searchPaths = []
+print_header(start)
 
+findTranslationIds(ComponentPrefix, StandardFile, SysFile)
 
-
-    for (path in args)
-        yyyy
-        
-        
-	start = datetime.today()
-
-	print_header(start)
-	
-	findTranslationIds (ComponentPrefix, StandardFile, SysFile)
-	
-	print_end(start)
-	
+print_end(start)
