@@ -9,9 +9,6 @@ import shutil
 
 from datetime import datetime
 
-# ToDo: sorting,
-# ToDo: append comment to translation (ID -> line index )
-
 HELP_MSG = """
 
 The class collects lines of a joomla language file (read/write ? change ?)
@@ -36,8 +33,8 @@ usage: LangFile.py -f <path file name> nnn -? xxxx -? yyyy  [-h]
 	
 ------------------------------------
 ToDo:
-  * 
-  * 
+  * sorting,
+  * append comment to translation (ID -> line index )
   * 
   * 
   * 
@@ -65,7 +62,7 @@ LeaveOut_05 = False
 # ================================================================================
 
 class jLangFile:
-    """ Package names to folder/file assignments from CVS modules file """
+    """  collects lines of a joomla language file for read/write/update """
 
     def __init__(self, langPathFileName):
         self.langPathFileName = langPathFileName  # CVS modules file name with path

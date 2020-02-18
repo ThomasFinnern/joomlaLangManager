@@ -1,23 +1,25 @@
 #!/usr/bin/python
 
 import os
-# import re
+import io
+import re
 import getopt
 import sys
 
 from datetime import datetime
 
 from jLangFile import *
+from TranslationIds import TranslationIds
 
 HELP_MSG = """
-findTranslationIds 
+findTranslationIdsInPath 
 	* Find all references of project translation ids in given project folders
 	* (ToDo: Add these findings to existing translation files as empty strings)    
 	   New lines will look like //COM_RSGALLERY2_<FOUND_TEXT_ID> =""//
 	* (ToDo: Search for not id'd strings like "some Text2 which have no reference)
  
 
-usage: findTranslationIds.py -? nnn -? xxxx -? yyyy  [-h] [list of paths for search, ,,, ]
+usage: findTranslationIdsInPath.py -? nnn -? xxxx -? yyyy  [-h] [list of paths for search, ,,, ]
 	-s Source language file  
 	-f Standard language file
 	-y System language file
@@ -41,8 +43,7 @@ usage: findTranslationIds.py -? nnn -? xxxx -? yyyy  [-h] [list of paths for sea
 	
 ------------------------------------
 ToDo:
-ToDo:
-  * 
+  * Second/multiple use may be counted / displayed
   * 
   * 
   * 
@@ -61,14 +62,19 @@ LeaveOut_05 = False
 # -------------------------------------------------------------------------------
 
 # ================================================================================
-# findTranslationIds
+# findTranslationIdsInPath
 # ================================================================================
 
-def findTranslationIds(SourceFile, StandardFile, SysFile):
+def findAllTranslationIds(componentPrefix, searchPaths, StandardFile, SysFile):
     try:
         print('*********************************************************')
-        print('findTranslationIds')
-        print('SourceFile: ' + SourceFile)
+        print('findAllTranslationIds')
+        print('componentPrefix: ' + componentPrefix)
+
+        print('searchPaths count: ' + str(len(searchPaths)))
+        for idx, searchPath in enumerate(searchPaths):
+            print('searchPath [' + str(idx) + ']: "' + searchPath + '"')
+
         print('StandardFile: ' + StandardFile)
         print('SysFile: ' + SysFile)
         print('---------------------------------------------------------')
@@ -77,117 +83,64 @@ def findTranslationIds(SourceFile, StandardFile, SysFile):
         # check input
         # ---------------------------------------------
 
-        if SourceFile == '':
+        if componentPrefix == '':
             print('***************************************************')
-            print('!!! Source file (SourceFile) name is mandatory !!!')
+            print('!!! Component Prefix name is mandatory !!!')
             print('***************************************************')
             print(HELP_MSG)
             Wait4Key()
             sys.exit(1)
 
-        if not testFile(SourceFile):
+        if len(searchPaths) < 1:
             print('***************************************************')
-            print('!!! Source file (LeftPath) path not found !!! ? -l ' + SourceFile + ' ?')
-            print('***************************************************')
-            print(HELP_MSG)
-            Wait4Key()
-            sys.exit(2)
-
-        # --------------------------------------------------------------------
-
-        if StandardFile == '':
-            print('***************************************************')
-            print('!!! Source file (StandardFile) name is mandatory !!!')
+            print('!!! Search paths not given !!!')
             print('***************************************************')
             print(HELP_MSG)
             Wait4Key()
-            sys.exit(3)
+            sys.exit(1)
 
-        if not testFile(StandardFile):
-            print('***************************************************')
-            print('!!! Source file (StandardFile) path not found !!! ? -l ' + StandardFile + ' ?')
-            print('***************************************************')
-            print(HELP_MSG)
-            #			Wait4Key()
-            sys.exit(4)
+        errFound = False
+        for idx, searchPath in enumerate(searchPaths):
 
-        # --------------------------------------------------------------------
+            if not testDir(searchPath):
+                print('***************************************************')
+                print('!!! Directory path does not exist for searchPath [' + str(idx) + ']: "' + searchPath + '"')
+                print('***************************************************')
+                errFound = True
 
-        if SysFile == '':
-            print('***************************************************')
-            print('!!! Destination file (RightPath) name is mandatory !!!')
-            print('***************************************************')
-            print(HELP_MSG)
-            Wait4Key()
-            sys.exit(5)
-
-        if not testFile(SysFile):
-            print('***************************************************')
-            print('!!! Destination file (RightPath) path not found !!! ? -r ' + SysFile + ' ?')
-            print('***************************************************')
-            print(HELP_MSG)
-            Wait4Key()
-            sys.exit(6)
+        # Any directory not found
+        if (errFound):
+            sys.exit(1)
 
         # --------------------------------------------------------------------
-        # read all files
+        # lang files
         # --------------------------------------------------------------------
 
-        master = jLangFile(SourceFile)
-        standard = jLangFile(StandardFile)
-        system = jLangFile(SysFile)
+        #        master = jLangFile(SourceFile)
+        #        standard = jLangFile(StandardFile)
+        #        system = jLangFile(SysFile)
 
         # print ('LeftPath: ' + LeftPath)
         # print ('RightPath: ' + RightPath)
         # print ('---------------------------------------------------------')
 
         # --------------------------------------------------------------------
-        # import translations into standard
+        #
         # --------------------------------------------------------------------
 
-        translations = standard.translations()
-
-        isChanged = False
+        translationIds = TranslationIds ()
 
         # check all translations
-        for transId, translation in translations.items():
-            # translation not defined
-            if not translation:
-                # check source
-                srcTranslation = master.get(transId)
-
-                # master translation existing <ß
-                if (srcTranslation):
-                    standard.set(transId, srcTranslation)
-
-                    isChanged = True
-
-        if (isChanged):
-            standard.safeToFile()
+        for searchPath in searchPaths:
+            findTranslationIdsInPath(searchPath, componentPrefix, translationIds)
 
         # --------------------------------------------------------------------
-        # import translations into sys file
+        #
         # --------------------------------------------------------------------
 
-        translations = system.translations()
+        # save list
+        translationIds.safeToFile(".\\foundTranslations.txt")
 
-        isChanged = False
-
-        # check all translations
-        for transId, translation in translations.items():
-            # translation not defined
-            if not translation:
-                # check source
-                srcTranslation = master.get(transId)
-
-                # master translation existing <ß
-                if (srcTranslation):
-                    system.set(transId, srcTranslation)
-
-                    isChanged = True
-
-        if (isChanged):
-            system.safeToFile()
 
     except Exception as ex:
         print(ex)
@@ -197,12 +150,157 @@ def findTranslationIds(SourceFile, StandardFile, SysFile):
     # --------------------------------------------------------------------
 
     finally:
-        print('exit findTranslationIds')
+        print('exit findAllTranslationIds')
 
     return
 
 
+def findTranslationIdsInPath(searchPath, componentPrefix, translationIds):
+    print('    >>> Enter findTranslationIdsInPath: ')
+    print('       searchPath: "' + searchPath + '"')
+    print('       translationIds: "' + str(len(translationIds.translationRefs())) + '"')
+
+    try:
+        # All files in folder
+        for fileName in find_files(searchPath):
+            findTranslationIdsInFile (fileName, componentPrefix, translationIds)
+
+#        #Debug small number of translations
+#        if(len(translationIds.translationRefs()) > 5):
+#            return
+
+        # All folders in folder
+        for folderName in find_folders(searchPath):
+            findTranslationIdsInPath(os.path.join(searchPath, folderName), componentPrefix, translationIds)
+
+    except Exception as ex:
+        print(ex)
+
+    print('    <<< Exit findTranslationIdsInPath: ' + str(len(translationIds.translationRefs())))
+    return
+
+#-----------
+def findTranslationIdsInFile(filePathName, componentPrefix, translationIds):
+    print('    >>> Enter findTranslationIdsInFile: ')
+    print('       filePathName: "' + filePathName + '"')
+    print('       translationIds: "' + str(len(translationIds.translationRefs())) + '"')
+
+    try:
+        searchRegex = "\\b" + componentPrefix + "\\w+"
+
+        # All lines
+        lineIdx = 0
+        with open(filePathName) as fin:
+            for line in fin:
+                lineIdx = lineIdx + 1
+
+                # found start of translation prefix
+                if (componentPrefix in line):
+
+                    #findings = re.findall("\b\w+", line)
+
+                    findings = re.findall(searchRegex, line)
+
+                    for translationId in findings:
+                        print(
+                            "translationId: " + translationId
+                            + " " + "line: " + str(lineIdx)
+                            + " " + "file: " + filePathName
+                            )
+
+                        translationIds.addItem (translationId, filePathName, lineIdx)
+
+    except Exception as ex:
+        print(ex)
+
+    print('    <<< Exit findTranslationIdsInFile: ' + str(len(translationIds.translationRefs())))
+    return
+
+
 ##-------------------------------------------------------------------------------
+##
+# def yyy (XXX):
+#	print ('    >>> Enter yyy: ')
+#	print ('       XXX: "' + XXX + '"')
+#
+#	ZZZ = ""
+#
+#	try:
+#
+#
+#	except Exception as ex:
+#		print(ex)
+#
+#	print ('    <<< Exit yyy: ' + ZZZ)
+#	return ZZZ
+
+##-------------------------------------------------------------------------------
+##
+# def yyy (XXX):
+#	print ('    >>> Enter yyy: ')
+#	print ('       XXX: "' + XXX + '"')
+#
+#	ZZZ = ""
+#
+#	try:
+#
+#
+#	except Exception as ex:
+#		print(ex)
+#
+#	print ('    <<< Exit yyy: ' + ZZZ)
+#	return ZZZ
+
+##-------------------------------------------------------------------------------
+##
+# def yyy (XXX):
+#	print ('    >>> Enter yyy: ')
+#	print ('       XXX: "' + XXX + '"')
+#
+#	ZZZ = ""
+#
+#	try:
+#
+#
+#	except Exception as ex:
+#		print(ex)
+#
+#	print ('    <<< Exit yyy: ' + ZZZ)
+#	return ZZZ
+
+##-------------------------------------------------------------------------------
+
+
+def dummyFunction():
+    print('    >>> Enter dummyFunction: ')
+
+
+# print ('       XXX: "' + XXX + '"')
+
+
+#-------------------------------------------------------------------------------
+# Small library
+#-------------------------------------------------------------------------------
+
+def find_files(nextDir):
+    for item in os.listdir(nextDir):
+        pathFileName = os.path.join (nextDir, item)
+        if os.path.isfile(pathFileName):
+            # yield file name
+            yield pathFileName
+        else:
+            continue
+
+
+def find_folders(nextDir):
+    for item in os.listdir(nextDir):
+        pathName = os.path.join (nextDir, item)
+        if os.path.isfile(pathName):
+            continue
+        else:
+            # yield folder name
+            yield pathName
+
 
 def Wait4Key():
     try:
@@ -256,13 +354,13 @@ if __name__ == '__main__':
     #	SourceFile = ''
     #	StandardFile = ''
     #	SysFile = ''
-    ComponentPrefix = "COM_RSGALLERY2"
+    componentPrefix = "COM_RSGALLERY2"
     StandardFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.ini'
     SysFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.sys.ini'
 
     for i, j in optlist:
         if i == "-c":
-            ComponentPrefix = j
+            componentPrefix = j
         if i == "-f":
             StandardFile = j
         if i == "-y":
@@ -292,9 +390,9 @@ if __name__ == '__main__':
 
     # dummy test constant
     searchPaths = [
-        "f:\Entwickl\rsgallery2\RSGallery2_J-4\administrator\components\com_rsgallery2",
-        "f:\Entwickl\rsgallery2\RSGallery2_J-4\administrator\components\com_rsgallery2\language\en-GB\en-GB.com_rsgallery2.ini",
-        "f:\Entwickl\rsgallery2\RSGallery2_J-4\components\com_rsgallery2"
+        "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\administrator\\components\\com_rsgallery2",
+        "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\components\\com_rsgallery2",
+        "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\media\\com_rsgallery2",
     ]
 
     if (len(args)):
@@ -303,10 +401,10 @@ if __name__ == '__main__':
     for searchPath in args:
         searchPaths.append(searchPath)
 
-start = datetime.today()
+    start = datetime.today()
 
-print_header(start)
+    print_header(start)
 
-findTranslationIds(ComponentPrefix, StandardFile, SysFile)
+    findAllTranslationIds(componentPrefix, searchPaths, StandardFile, SysFile)
 
-print_end(start)
+    print_end(start)
