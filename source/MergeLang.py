@@ -13,14 +13,16 @@ from jLangFile import *
 HELP_MSG = """
 MergeLang supports the merge of a collected ini file of  
 joomla string definitions into a file with empty definitions.
-Expexected empty definitions look like following 
+These empty definitions are looked up in the "source" language file and replaced by findings
+
+Source contains ready to use definitions
+StandardFile, SysFile contain empty translation Ids  
+
+Expected empty definitions look like following 
 
 COM_RSGALLERY2_FIND_TEXT
 COM_RSGALLERY2_FIND_TEXT=
 COM_RSGALLERY2_FIND_TEXT = 
-
-These empty definitions are looked up in the "source" 
-language file and replaced by findings
 
 
 usage: MergeLang.py -? nnn -? xxxx -? yyyy  [-h]
@@ -258,9 +260,9 @@ if __name__ == '__main__':
 #	SourceFile = ''
 #	StandardFile = ''
 #	SysFile = ''
-	SourceFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/Sorted_J3.x.ini'
+	SourceFile   = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/Sorted_J3.x.ini'
 	StandardFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.ini'
-	SysFile = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.sys.ini'
+	SysFile      = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.sys.ini'
 
 	for i, j in optlist:
 		if i == "-s":

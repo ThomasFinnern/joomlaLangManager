@@ -165,7 +165,7 @@ def findTranslationIdsInPath(searchPath, componentPrefix, translationIds):
         for fileName in find_files(searchPath):
             findTranslationIdsInFile (fileName, componentPrefix, translationIds)
 
-#        #Debug small number of translations
+#        # Debug small number of translations
 #        if(len(translationIds.translationRefs()) > 5):
 #            return
 
