@@ -1,25 +1,21 @@
-
-
----
-[ ] InsertNew: insert new tranlation IDs from FindTranslationIds into existing project lang files
-
-[ ] Join project FindTranslationIds with InsertNew and MergeLang 
+# detect translations in source files
 
 ---
-[ ] FindTranslationIds: Determine which translation needs to be in  *.sys.ini and which in both so insert may 
-
+- [ ] InsertNew: insert new translation IDs from FindTranslationIds into existing project lang files
+- [ ] Join project FindTranslationIds with InsertNew and MergeLang 
 ---
-[ ] Merge translation: MergeTrans -> en_GB -> De-DE 
+- [ ] FindTranslationIds: Determine which translation needs to be in  *.sys.ini and which in both so insert may 
+---
+- [ ] Merge translation: MergeTrans -> en_GB -> De-DE 
+  1. Insert empty translation string accordign to source order
+  1. Delta sources: Check for changed translations in two sources, marked trandslations in destination
 
-  a) Fehlende Einträge als leere Strings am richtigen Platz einfügen (Zwei Dateien)
-  b) Delta source d.h. geänderte Sourcen vergleichen und geänderte Strings in Ziel Datei markieren / anbieten ... (Drei Dateien) 
+- [ ] Merge translation*s*: see above. For all *.ini source files do merge translations
+  *  Two folders (source type en_GB / target type de_DE)
 
-[ ] Merge translation_S_ Siehe Oben. Für alle *.ini Dateien merge translation a/b durchführen
-    Zwei Wurzelverzeichnisse (source type en_GB / target type de_DE)
+- [ ] User interface for translatons -> Support user with list  of missing/changed translation and proposals (similar ones) 
+  *  Support input of single translation with insert
 
-
-[ ] Oberfläche für Merge translation_S_ -> Liste mit fehlenden und geänderten Einträgen Anzeigen. 
-    Eingaben für Übersetzungen einzelner "Zeilen" ermöglichen. Speicherung dann Passend 
 
 
        
