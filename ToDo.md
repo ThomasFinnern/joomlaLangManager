@@ -1,4 +1,4 @@
-# detect translations in source files
+# Detect translations in source files
 
 ---
 - [ ] InsertNew: insert new translation IDs from FindTranslationIds into existing project lang files
@@ -8,7 +8,7 @@
 ---
 - [ ] Merge translation: MergeTrans -> en_GB -> De-DE 
   1. Insert empty translation string accordign to source order
-  1. Delta sources: Check for changed translations in two sources, marked trandslations in destination
+  1. Delta sources: Check for changed translations in two sources, mark translations in destination
 
 - [ ] Merge translation*s*: see above. For all *.ini source files do merge translations
   *  Two folders (source type en_GB / target type de_DE)

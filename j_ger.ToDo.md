@@ -15,10 +15,10 @@
 - [ ] Find similar ones (last (?two) words in translation id ==> *_<1>-<2>
 - [ ] .
 - [ ] .
-- [ ] check for changed translations en-GB.last
-- [ ] enable "app" translation user input 
-- [ ] auto detect files given in sandbox -> create translatio for all
-- [ ] auto detect files given in sandbox -> de-DE.com_contact.sys.ini -> [en-GB] com_contact.sys.ini
+- [ ] Check for changed translations in two sources, mark translations in destination. (use folder en-GB.last) 
+- [ ] Enable "app" translation user input 
+- [ ] Auto detect files given in sandbox -> create translatio for all
+- [ ] Auto detect files given in sandbox -> de-DE.com_contact.sys.ini -> [en-GB] com_contact.sys.ini
 - [ ] .
 - [ ] .
 
