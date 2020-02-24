@@ -13,7 +13,6 @@ HELP_MSG = """
 
 The class collects lines of a joomla language file (read/write ? change ?)
 
-
 usage: LangFile.py -f <path file name> nnn -? xxxx -? yyyy  [-h]
 	-f path to language file 
 	-? 
