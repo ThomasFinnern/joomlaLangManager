@@ -308,10 +308,10 @@ class jLangFile:
 
     ##-------------------------------------------------------------------------------
     ## writes file with matching translations
-
-    def safeToFile(self, newFileName="", isCreateTempFile=True,
+    # Old: safeToFile'
+    def mergedToFile(self, newFileName="", isCreateTempFile=True,
                    isDoBackup=True):  # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
-        print('    >>> Enter safeToFile: ')
+        print('    >>> Enter mergedToFile: ')
         #        print('       isOverwrite: "' + str(isOverwrite) + '"')
         print('       isCreateTempFile: "' + str(isCreateTempFile) + '"')
         print('       isDoBackup: "' + str(isDoBackup) + '"')
@@ -348,7 +348,7 @@ class jLangFile:
         except Exception as ex:
             print(ex)
 
-        print('    <<< Exit safeToFile: ' + str(isSaved))
+        print('    <<< Exit mergedToFile: ' + str(isSaved))
         return isSaved
 
     # -------------------------------------------------------------------------------
@@ -406,6 +406,81 @@ class jLangFile:
         #        print('    <<< Exit mergedTranlationLines: ' + str(mergedLines.count()))
         print('    <<< Exit mergedTranlationLines: ' + str(len(mergedLines)))
         return mergedLines
+
+    ##-------------------------------------------------------------------------------
+    ## writes file with collected translations
+
+    def translationsToFile(self, newFileName="", isCreateTempFile=True,
+                   isDoBackup=True):  # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
+        print('    >>> Enter mergedToFile: ')
+        #        print('       isOverwrite: "' + str(isOverwrite) + '"')
+        print('       isCreateTempFile: "' + str(isCreateTempFile) + '"')
+        print('       isDoBackup: "' + str(isDoBackup) + '"')
+
+        isSaved = False
+
+        try:
+
+            dstName = self.langPathFileName
+
+            # New name given
+            if (len(newFileName) > 0):
+                self.langPathFileName = newFileName
+
+            # remove extension
+            dstBaseName = os.path.splitext(self.langPathFileName)[0]
+            if (isCreateTempFile):
+                dstName = dstBaseName + '.tmp'
+            if (isDoBackup):
+                bckName = dstBaseName + '.bak'
+                shutil.copy2(self.langPathFileName, bckName)
+
+            print('writing to: "' + self.langPathFileName)
+
+            newLines = self.collectedTranlationLines()
+
+            file = open(self.langPathFileName, "w")
+            for line in newLines:
+                file.write(line + '\r')
+            file.close()
+
+            isSaved = True
+
+        except Exception as ex:
+            print(ex)
+
+        print('    <<< Exit mergedToFile: ' + str(isSaved))
+        return isSaved
+
+    # -------------------------------------------------------------------------------
+    #
+    # ToDo: mark each translation and later check and add unused translations
+    # ToDo: leave out doubles, keep COM_RSGALLERY2_ (last char)
+    def collectedTranlationLines(self):
+        print('    >>> Enter collectedTranlationLines: ')
+        #    	print ('       XXX: "' + XXX + '"')
+
+        collectedLines = []
+
+        try:
+            print('file lines: ' + str(len(self._fileLines)))
+            print('file translations: ' + str(len(self._translations)))
+
+            idx = 0
+            # check each line for existing translation
+            for transId, translation in self._translations.items():
+                idx += 1
+
+                line = transId  + '="' + translation + '"' # + '"\r'
+
+                collectedLines.append(line)
+
+        except Exception as ex:
+            print(ex)
+
+        #        print('    <<< Exit collectedTranlationLines: ' + str(collectedLines.count()))
+        print('    <<< Exit collectedTranlationLines: ' + str(len(collectedLines)))
+        return collectedLines
 
 
 ##-------------------------------------------------------------------------------
@@ -535,5 +610,5 @@ if __name__ == '__main__':
 
     # init class
     LangFile = jLangFile(langPathFileName)
-    LangFile.safeToFile("", True)
+    LangFile.mergedToFile("", True)
     print_end(start)

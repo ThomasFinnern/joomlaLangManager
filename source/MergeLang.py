@@ -170,7 +170,7 @@ def MergeLang (SourceFile, StandardFile, SysFile):
 					isChanged = True
 
 		if (isChanged):
-			standard.safeToFile ()
+			standard.mergedToFile ()
 
 		#--------------------------------------------------------------------
 		# import translations into sys file
@@ -194,7 +194,7 @@ def MergeLang (SourceFile, StandardFile, SysFile):
 					isChanged = True
 
 		if (isChanged):
-			system.safeToFile()
+			system.mergedToFile()
 
 	except Exception as ex:
 		print(ex)
