@@ -4,6 +4,8 @@ import os
 #import re
 import getopt
 import sys
+import shutil
+import io
 
 from datetime import datetime
 
@@ -45,7 +47,7 @@ usage: TranslateLang.py -s <file path name> -t <>file path name> -l <lang defini
 
 ------------------------------------
 ToDo:
-  *
+  * encoding='utf-8' in all file handlings !!!
   *
   *
   *
@@ -113,27 +115,33 @@ def TranslateLang (SourceFile, TargetFile, TargetLang):
 #			Wait4Key()
 #			sys.exit(4)
 
-		#--------------------------------------------------------------------
-		# target file
-		#--------------------------------------------------------------------
+		# --------------------------------------------------------------------
+		# target file (s)
+		# --------------------------------------------------------------------
 
 		# org file name: copy if exist
 		# debug helper to kee the original on serveral translation attempts
 		orgTargetFile = TargetFile + '.org'
-		if (os.path.file.exist(orgTargetFile):
-			shutil.copy (orgTargetFile, TargetFile))
+		if (os.path.isfile(orgTargetFile)):
+			shutil.copy(orgTargetFile, TargetFile)
 
 		# create file if not exists
-		if (not os.path.file.exist(TargetFile):
+		if (not os.path.isfile(TargetFile)):
 			f = open(TargetFile, "w")
 			f.close()
 
-        # ToDo: Test empty files !!!
-        target = jLangFile (TargetFile)
+		# create destination file
+		destinationFile  = TargetFile + '.new'
+		f = open(destinationFile, "w")
+		f.close()
 
-		#--------------------------------------------------------------------
+		# ToDo: Test empty files !!!
+		target = jLangFile(TargetFile)
+		destination = jLangFile(destinationFile)
+
+		# --------------------------------------------------------------------
 		# read source file
-		#--------------------------------------------------------------------
+		# --------------------------------------------------------------------
 
 		source = jLangFile (SourceFile)
 
@@ -144,49 +152,47 @@ def TranslateLang (SourceFile, TargetFile, TargetLang):
 		srcTranslations = source.translations()
 		trgTranslations = target.translations()
 
-yyy
+		#--------------------------------------------------------------------
+		# create empty translations
+		#--------------------------------------------------------------------
 
 		isChanged = False
 
-		# check all translations
-		for transId, translation in translations.items():
-			# translation not defined
-			if not translation:
-				# check source
-				srcTranslation = master.get (transId)
+		# Texts need to be translated
+		translationOriginals = []
 
-				# master translation existing <ß
-				if (srcTranslation):
-					standard.set (transId, srcTranslation)
+		# create all translations
+#		for transId, translation in srcTranslations.items():
+		for transId in srcTranslations.keys():
 
-					isChanged = True
+			# translation found ?
+			if (transId in trgTranslations):
+				translation = trgTranslations[transId]
+			else:
+				translation = "!!!"
+				isChanged = True
+				# keep naked original texts for 'auto' translation
+				translationOriginals.append (srcTranslations [transId])
 
-		if (isChanged):
-			standard.safeToFile ()
+			destination.set (transId, translation)
+
+			# ToDo Missing / Merge / empty lines ...
 
 		#--------------------------------------------------------------------
-		# import translations into sys file
+		# results to file
 		#--------------------------------------------------------------------
 
-		translations = system.translations()
-
-		isChanged = False
-
-		# check all translations
-		for transId, translation in translations.items():
-			# translation not defined
-			if not translation:
-				# check source
-				srcTranslation = master.get(transId)
-
-				# master translation existing <ß
-				if (srcTranslation):
-					system.set(transId, srcTranslation)
-
-					isChanged = True
-
 		if (isChanged):
-			system.safeToFile()
+			destination.safeToFile ("", False, False)
+
+			orignalTextFile  = TargetFile + '.txt'
+			with open(orignalTextFile, mode='wt', encoding='utf-8') as myfile:
+				myfile.write('\n'.join(translationOriginals))
+
+		#--------------------------------------------------------------------
+		#
+		#--------------------------------------------------------------------
+
 
 	except Exception as ex:
 		print(ex)

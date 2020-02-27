@@ -324,21 +324,21 @@ class jLangFile:
 
             # New name given
             if (len(newFileName) > 0):
-                dstName = newFileName
-            else:
-                # remove extension
-                dstBaseName = os.path.splitext(dstName)[0]
-                if (isCreateTempFile):
-                    dstName = dstBaseName + '.tmp'
-                if (isDoBackup):
-                    bckName = dstBaseName + '.bak'
-                    shutil.copy2(self.langPathFileName, bckName)
+                self.langPathFileName = newFileName
 
-            print('writing to: "' + dstName)
+            # remove extension
+            dstBaseName = os.path.splitext(self.langPathFileName)[0]
+            if (isCreateTempFile):
+                dstName = dstBaseName + '.tmp'
+            if (isDoBackup):
+                bckName = dstBaseName + '.bak'
+                shutil.copy2(self.langPathFileName, bckName)
+
+            print('writing to: "' + self.langPathFileName)
 
             newLines = self.mergedTranlationLines()
 
-            file = open(dstName, "w")
+            file = open(self.langPathFileName, "w")
             for line in newLines:
                 file.write(line + '\r')
             file.close()
