@@ -1,6 +1,8 @@
 # project files
 
-.wip/*/
+.wip/de-DE/*
+.wip/en-GB/*
+.wip/en-GB.last/*
 
 # python files
 # Byte-compiled / optimized / DLL files
