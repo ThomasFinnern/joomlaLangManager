@@ -3,3 +3,14 @@ Bits and pieces to handle joomla language translation files (coollect IDs, merge
 
 Uses python to find component language ids, merge with old translations and so time allows more
 The project origins in the needs when i recreated rsgallery2 for joomla 4
+
+
+german tranlations
+
+de-AT	German (Austria)
+de-CH	German (Switzerland)
+de-DE	German (Germany)
+de-LI	German (Liechtenstein)
+de-LU	German (Luxembourg)
+
+
