@@ -9,7 +9,10 @@ import shutil
 
 from datetime import datetime
 
+#from .jLangItem import *
 from jLangItem import *
+#from .jLangItem import jLangItem
+
 
 HELP_MSG = """
 
@@ -169,7 +172,6 @@ class jLangFile:
                     # Standard lines
                     if (not isHeaderActive):
 
-
                         # Comment or empty line
                         if (line.startswith(';') or len(line) < 1):
                             nextItem.preLines.append(line)
@@ -183,12 +185,10 @@ class jLangFile:
 
                         translation = translationParanthesis [1:-1]
 
-yyy                        nextItem = jLangItem()
-
-yyy                        # new element
+                        # new element
                         if (transId not in self._translations):
                             # todo: own class, save with line as id for telling lines od double entries
-                            self._translations[transId] = translation
+                            self._translations[transId] = nextItem
                         else:
                             # Existing element
                             if (self._translations[transId] == translation):
@@ -200,12 +200,14 @@ yyy                        # new element
                                           + "2nd: " + transId + " = " + translation
                             print(logText)
 
+                        nextItem = jLangItem()
+
             print('file translations: ' + str(len(self._translations)))
 
             # --- debug exit -----------------------
 
-        #                    if (idx> 20):
-        #                       break
+            #                    if (idx> 20):
+            #                       break
 
         except Exception as ex:
             print(ex)
@@ -493,8 +495,18 @@ yyy                        # new element
             for transId, translation in self._translations.items():
                 idx += 1
 
+                #self.__translation = ""  # item translation
+                #self.__preLines = []  # empty lines and comments before item line
+                #self.__commentsBehind = ""  # comments behind translation item
+
+                translationText = translation.translation
+
+                for preLine in translation.preLines:
+                    collectedLines.append(preLine)
+
                 line = transId  + '="' + translation + '"' # + '"\r'
 
+                # ToDo: __commentsBehind
                 collectedLines.append(line)
 
         except Exception as ex:
@@ -599,8 +611,9 @@ def print_end(start):
 if __name__ == '__main__':
     optlist, args = getopt.getopt(sys.argv[1:], 'f:12345h')
 
-    langPathFileName = ''
-    langPathFileName = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.ini'
+    #langPathFileName = ''
+    #langPathFileName = '../RSGallery2_J-4/administrator/components/com_rsgallery2/language/en-GB/en-GB.com_rsgallery2.ini'
+    langPathFileName = os.path.join ('..', '.regression', 'readWriteSame', 'de-DE.lib_joomla.ini')
 
     for i, j in optlist:
         if i == "-f":
@@ -632,5 +645,9 @@ if __name__ == '__main__':
 
     # init class
     LangFile = jLangFile(langPathFileName)
-    LangFile.mergedToFile("", True)
+#    LangFile.mergedToFile("", True)
+
+#   LangFile.Write (bak?)
+    LangFile.translationsToFile (langPathFileName + '.new', False)
+    
     print_end(start)

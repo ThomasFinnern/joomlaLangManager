@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os
+# import os
 
 from datetime import datetime
 
@@ -22,6 +22,7 @@ ToDo:
 # ================================================================================
 # LangFile
 # ================================================================================
+
 
 class jLangItem:
     """ Contains an translation item with references to empty lines and comments """

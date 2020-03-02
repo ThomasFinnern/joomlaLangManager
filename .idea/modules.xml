@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/langMerge.iml" filepath="$PROJECT_DIR$/.idea/langMerge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/joomlaLangManager.iml" filepath="$PROJECT_DIR$/.idea/joomlaLangManager.iml" />
     </modules>
   </component>
 </project>
