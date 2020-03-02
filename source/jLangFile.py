@@ -9,6 +9,8 @@ import shutil
 
 from datetime import datetime
 
+from jLangItem import *
+
 HELP_MSG = """
 
 The class collects lines of a joomla language file (read/write ? change ?)
@@ -53,7 +55,6 @@ LeaveOut_03 = False
 LeaveOut_04 = False
 LeaveOut_05 = False
 
-
 # -------------------------------------------------------------------------------
 
 # ================================================================================
@@ -70,6 +71,7 @@ class jLangFile:
         self._translations = {}  # All translations
         self._langId = 'en-GB'  # lang ID
         self._isSystType = False  # lang file type (normal/sys)
+        self._header = []  # Start comments on translation file
         # self._f = []  # All translations
 
         # ---------------------------------------------
@@ -137,6 +139,10 @@ class jLangFile:
             # read all lines
             # --------------------------------------------------------------------
 
+            self._header = []  # Start comments on translation file
+            isHeaderActive = True
+            nextItem = jLangItem ()
+
             with open(langPathFileName) as f:
                 self._fileLines = [line.strip() for line in f]
 
@@ -147,36 +153,52 @@ class jLangFile:
                 for line in self._fileLines:
                     idx += 1
 
-                    # comments
-                    if (line.startswith(';')):
-                        continue
+                    #--- handle header lines -------
 
-                    # empty lines
-                    if (len(line) < 1):
-                        continue
-
-                    # --- translation split -----------------------
-
-                    [pName, pTranslation] = line.split('=', maxsplit=1)
-                    transId = pName.strip()
-                    translationParanthesis = pTranslation.strip()
-
-                    translation = translationParanthesis [1:-1]
-
-                    # new element
-                    if (transId not in self._translations):
-                        # todo: own class, save with line as id for telling lines od double entries
-                        self._translations[transId] = translation
-                    else:
-                        # Existing element
-                        if (self._translations[transId] == translation):
-                            logText = "Existing element found in Line " + str(idx) + ": " + transId + " = " + \
-                                      self._translations[transId]
+                    if (isHeaderActive):
+                        # Comment or empty line
+                        if (line.startswith(';') or len(line) < 1):
+                            self._header.append(line)
                         else:
-                            logText = "Existing mismatching element found in Line " + str(idx) + ":\\r\\n" \
-                                      + "1st: " + transId + " = " + self._translations[transId] \
-                                      + "2nd: " + transId + " = " + translation
-                        print(logText)
+                            # first item line
+                            isHeaderActive = False
+
+                            # init new item
+                            nextItem = jLangItem()
+
+                    # Standard lines
+                    if (not isHeaderActive):
+
+
+                        # Comment or empty line
+                        if (line.startswith(';') or len(line) < 1):
+                            nextItem.preLines.append(line)
+                            continue
+
+                        # --- translation split -----------------------
+
+                        [pName, pTranslation] = line.split('=', maxsplit=1)
+                        transId = pName.strip()
+                        translationParanthesis = pTranslation.strip()
+
+                        translation = translationParanthesis [1:-1]
+
+yyy                        nextItem = jLangItem()
+
+yyy                        # new element
+                        if (transId not in self._translations):
+                            # todo: own class, save with line as id for telling lines od double entries
+                            self._translations[transId] = translation
+                        else:
+                            # Existing element
+                            if (self._translations[transId] == translation):
+                                logText = "Existing element found in Line " + str(idx) + ": " + transId + " = " + \
+                                          self._translations[transId]
+                            else:
+                                logText = "Existing mismatching element found in Line " + str(idx) + ":\\r\\n" \
+                                          + "1st: " + transId + " = " + self._translations[transId] \
+                                          + "2nd: " + transId + " = " + translation
+                            print(logText)
 
             print('file translations: ' + str(len(self._translations)))
 
