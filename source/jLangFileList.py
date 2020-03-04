@@ -1,6 +1,11 @@
 #!/usr/bin/python
 
-# import os
+import os
+# import re
+import getopt
+import sys
+import io
+import shutil
 
 from datetime import datetime
 
@@ -13,6 +18,23 @@ has a language ID like de-De in front or missing
 
 Over the list can be iterated outside
 
+usage: LangFile.py -f <path file name> nnn -? xxxx -? yyyy  [-h]
+	-f path to language file 
+	-? 
+
+
+	-h shows this message
+	
+	-1 
+	-2 
+	-3 
+	-4 
+	-5 
+	
+	
+	example:
+	
+
 ------------------------------------
 ToDo:
   *      
@@ -20,11 +42,17 @@ ToDo:
 """
 
 # -------------------------------------------------------------------------------
+LeaveOut_01 = False
+LeaveOut_02 = False
+LeaveOut_03 = False
+LeaveOut_04 = False
+LeaveOut_05 = False
+
+# -------------------------------------------------------------------------------
 
 # ================================================================================
-# LangFile
+# LangFileList
 # ================================================================================
-
 
 class jLangFileList:
     """ Contains an translation item with references to empty lines and comments """
@@ -34,11 +62,14 @@ class jLangFileList:
 #        self.__preLines = preLines  # empty lines and comment before to item line
 #        self.__folderName = folderName  # comments behind translation item
 
-    def __init__(self):
-        self.__langId =  ""    # de-DE 
-        self.__fileNames = []  # empty lines and comments before item line
-        self.__folderName = ""  # 
+    def __init__(self, folderName, langId):
+        self.__folderName = ""  #
+        self.__langId = langId    # de-DE
 
+        self.__fileNames = []  # empty lines and comments before item line
+
+        collectFilenames ()
+        
     #--- translation ---
     
     @property
@@ -68,6 +99,66 @@ class jLangFileList:
     @folderName.setter
     def translation(self, folderName):
         self.__folderName = folderName
+
+    # ================================================================================
+    # extraction of file modules
+    # ================================================================================
+
+    #	def _initLists(self):
+    #		# read modules file and assign to lists
+    #		self.assignFileContent(self.langPathFileName)
+
+    # -------------------------------------------------------------------------------
+
+    def collectFilenames (self, newFolderName):
+    
+        try:
+            print('*********************************************************')
+            print('collectFilenames')
+            print('newFolderName: ' + newFolderName)
+            print('---------------------------------------------------------')
+
+            # New name given
+            if (len(newFolderName) > 0):
+                self.__folderName = newFolderName
+
+            if not testDir(self.__folderName):
+                print('***************************************************')
+                print('!!! Folder path not found !!! ? -l ' + self.__folderName + ' ?')
+                print('***************************************************')
+                print(HELP_MSG)
+                Wait4Key()
+                sys.exit(2)
+
+            
+
+            # --------------------------------------------------------------------
+            # All files in source
+            # --------------------------------------------------------------------
+    
+            allFiles = [f for f in os.listdir(self.__folderName) if os.path.isfile(os.path.join(self.__folderName, f))]
+    
+            for sourceFile in allFiles:
+                
+                # ends with .ini
+                
+                
+                print('sourceFile: ' + sourceFile)
+
+
+
+        except Exception as ex:
+            print(ex)
+
+        # --------------------------------------------------------------------
+        #
+        # --------------------------------------------------------------------
+
+        finally:
+            print('exit assignFileContent')
+
+        return
+
 
 
 
@@ -104,3 +195,105 @@ class jLangFileList:
 
         return bExist
 
+
+##-------------------------------------------------------------------------------
+
+def dummyFunction():
+    print('    >>> Enter dummyFunction: ')
+
+
+# print ('       XXX: "' + XXX + '"')
+
+##-------------------------------------------------------------------------------
+
+def Wait4Key():
+    try:
+        input("Press enter to continue")
+    except SyntaxError:
+        pass
+
+
+def testFile(file):
+    exists = os.path.isfile(file)
+    if not exists:
+        print("Error: File does not exist: " + file)
+    return exists
+
+
+def testDir(directory):
+    exists = os.path.isdir(directory)
+    if not exists:
+        print("Error: Directory does not exist: " + directory)
+    return exists
+
+
+def print_header(start):
+    print('------------------------------------------')
+    print('Command line:', end='')
+    for s in sys.argv:
+        print(s, end='')
+
+    print('')
+    print('Start time:   ' + start.ctime())
+    print('------------------------------------------')
+
+
+def print_end(start):
+    now = datetime.today()
+    print('')
+    print('End time:               ' + now.ctime())
+    difference = now - start
+    print('Time of run:            ', difference)
+
+
+# print ('Time of run in seconds: ', difference.total_seconds())
+
+# ================================================================================
+#   main (used from command line)
+# ================================================================================
+
+if __name__ == '__main__':
+    optlist, args = getopt.getopt(sys.argv[1:], 'p:12345h')
+
+    langPathFileName = os.path.join ('..', '.regression', 'de-DE')
+    langId = 'de-DE'
+
+    for i, j in optlist:
+        if i == "-p":
+            langPathFileName = j
+
+        if i == "-i":
+            langId = j
+
+        if i == "-h":
+            print(HELP_MSG)
+            sys.exit(0)
+
+        if i == "-1":
+            LeaveOut_01 = True
+            print("LeaveOut_01")
+        if i == "-2":
+            LeaveOut_02 = True
+            print("LeaveOut__02")
+        if i == "-3":
+            LeaveOut_03 = True
+            print("LeaveOut__03")
+        if i == "-4":
+            LeaveOut_04 = True
+            print("LeaveOut__04")
+        if i == "-5":
+            LeaveOut_05 = True
+            print("LeaveOut__05")
+
+    start = datetime.today()
+
+    print_header(start)
+
+    # init class
+    FileList = jLangFileList(langPathFileName)
+#    LangFile.mergedToFile("", True)
+
+#   LangFile.Write (bak?)
+#    FileList.translationsToFile (langPathFileName + '.new', False, False)
+    
+    print_end(start)

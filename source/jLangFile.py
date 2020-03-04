@@ -9,10 +9,7 @@ import shutil
 
 from datetime import datetime
 
-#from .jLangItem import *
 from jLangItem import *
-#from .jLangItem import jLangItem
-
 
 HELP_MSG = """
 
@@ -370,7 +367,7 @@ class jLangFile:
 
             file = open(self.langPathFileName, "w", encoding="utf-8", newline="\n")
             for line in newLines:
-                file.write(line)
+                file.write(line + '\n')
             file.close()
 
             isSaved = True
@@ -472,7 +469,7 @@ class jLangFile:
 
             file = open(self.langPathFileName, "w", encoding="utf-8", newline="\n")
             for line in newLines:
-                file.write(line)
+                file.write(line + '\n')
             file.close()
 
             isSaved = True
