@@ -39,7 +39,7 @@ usage: LangFile.py -f <path file name> nnn -? xxxx -? yyyy  [-h]
 ToDo:
   * sorting,
   * append comment to translation (ID -> line index )
-  * 
+  * ? Flag needed for /COM_ID = "..."/  or /COM_ID="..."
   * 
   * 
 
@@ -146,12 +146,13 @@ class jLangFile:
             isHeaderActive = True
             nextItem = jLangItem ()
 
-            with open(langPathFileName) as f:
+            with open(langPathFileName, mode="r", encoding="utf-8") as f:
+                # toDo: Use direct in for loop
                 self._fileLines = [line.strip() for line in f]
 
-                print('file lines: ' + str(len(self._fileLines)))
-                # All lines
+                print('file lines count: ' + str(len(self._fileLines)))
 
+                # All lines
                 idx = 0
                 for line in self._fileLines:
                     idx += 1
@@ -174,6 +175,9 @@ class jLangFile:
 
                         # Comment or empty line
                         if (line.startswith(';') or len(line) < 1):
+#                            prelines = nextItem.preLines
+#                            preLines.append(line)
+#                            nextItem.preLines.append(line)
                             nextItem.preLines.append(line)
                             continue
 
@@ -183,7 +187,7 @@ class jLangFile:
                         transId = pName.strip()
                         translationParanthesis = pTranslation.strip()
 
-                        translation = translationParanthesis [1:-1]
+                        nextItem.translationText = translationParanthesis [1:-1]
 
                         # new element
                         if (transId not in self._translations):
@@ -191,13 +195,15 @@ class jLangFile:
                             self._translations[transId] = nextItem
                         else:
                             # Existing element
-                            if (self._translations[transId] == translation):
+
+                            # Compare text
+                            if (self._translations[transId].translationText == nextItem.translationText):
                                 logText = "Existing element found in Line " + str(idx) + ": " + transId + " = " + \
                                           self._translations[transId]
                             else:
-                                logText = "Existing mismatching element found in Line " + str(idx) + ":\\r\\n" \
-                                          + "1st: " + transId + " = " + self._translations[transId] \
-                                          + "2nd: " + transId + " = " + translation
+                                logText = "Existing mismatching element found in Line " + str(idx) + ":\r\n" \
+                                          + "1st: " + transId + " = " + self._translations[transId].translationText \
+                                          + "2nd: " + transId + " = " + nextItem.translationText
                             print(logText)
 
                         nextItem = jLangItem()
@@ -362,9 +368,9 @@ class jLangFile:
 
             newLines = self.mergedTranlationLines()
 
-            file = open(self.langPathFileName, "w")
+            file = open(self.langPathFileName, "w", encoding="utf-8", newline="\n")
             for line in newLines:
-                file.write(line + '\r')
+                file.write(line)
             file.close()
 
             isSaved = True
@@ -446,7 +452,6 @@ class jLangFile:
         try:
 
             dstName = self.langPathFileName
-
             # New name given
             if (len(newFileName) > 0):
                 self.langPathFileName = newFileName
@@ -455,17 +460,19 @@ class jLangFile:
             dstBaseName = os.path.splitext(self.langPathFileName)[0]
             if (isCreateTempFile):
                 dstName = dstBaseName + '.tmp'
+
+            # Vackup: original must exist
             if (isDoBackup):
                 bckName = dstBaseName + '.bak'
                 shutil.copy2(self.langPathFileName, bckName)
 
             print('writing to: "' + self.langPathFileName)
 
-            newLines = self.collectedTranlationLines()
+            newLines = self.collectedTranslationLines()
 
-            file = open(self.langPathFileName, "w")
+            file = open(self.langPathFileName, "w", encoding="utf-8", newline="\n")
             for line in newLines:
-                file.write(line + '\r')
+                file.write(line)
             file.close()
 
             isSaved = True
@@ -480,8 +487,8 @@ class jLangFile:
     #
     # ToDo: mark each translation and later check and add unused translations
     # ToDo: leave out doubles, keep COM_RSGALLERY2_ (last char)
-    def collectedTranlationLines(self):
-        print('    >>> Enter collectedTranlationLines: ')
+    def collectedTranslationLines(self):
+        print('    >>> Enter collectedTranslationLines: ')
         #    	print ('       XXX: "' + XXX + '"')
 
         collectedLines = []
@@ -490,6 +497,11 @@ class jLangFile:
             print('file lines: ' + str(len(self._fileLines)))
             print('file translations: ' + str(len(self._translations)))
 
+            # header
+            for line in self._header:
+                collectedLines.append(line)
+
+            # translation lines
             idx = 0
             # check each line for existing translation
             for transId, translation in self._translations.items():
@@ -499,12 +511,12 @@ class jLangFile:
                 #self.__preLines = []  # empty lines and comments before item line
                 #self.__commentsBehind = ""  # comments behind translation item
 
-                translationText = translation.translation
+                translationText = translation.translationText
 
                 for preLine in translation.preLines:
                     collectedLines.append(preLine)
 
-                line = transId  + '="' + translation + '"' # + '"\r'
+                line = transId  + '="' + translationText + '"'
 
                 # ToDo: __commentsBehind
                 collectedLines.append(line)
@@ -512,8 +524,8 @@ class jLangFile:
         except Exception as ex:
             print(ex)
 
-        #        print('    <<< Exit collectedTranlationLines: ' + str(collectedLines.count()))
-        print('    <<< Exit collectedTranlationLines: ' + str(len(collectedLines)))
+        #        print('    <<< Exit collectedTranslationLines: ' + str(collectedLines.count()))
+        print('    <<< Exit collectedTranslationLines: ' + str(len(collectedLines)))
         return collectedLines
 
 
@@ -648,6 +660,6 @@ if __name__ == '__main__':
 #    LangFile.mergedToFile("", True)
 
 #   LangFile.Write (bak?)
-    LangFile.translationsToFile (langPathFileName + '.new', False)
+    LangFile.translationsToFile (langPathFileName + '.new', False, False)
     
     print_end(start)

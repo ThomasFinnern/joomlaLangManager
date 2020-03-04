@@ -28,24 +28,26 @@ class jLangItem:
     """ Contains an translation item with references to empty lines and comments """
 
 #    def __init__(self, translation, preLines, commentsBehind):
-#        self.__translation =  translation #
+#        self.__translationText =  translation #
 #        self.__preLines = preLines  # empty lines and comment before to item line
 #        self.__commentsBehind = commentsBehind  # comments behind translation item
 
     def __init__(self):
-        self.__translation =  ""    # item translation
+        self.__translationText =  ""    # item translation
         self.__preLines = []        # empty lines and comments before item line
         self.__commentsBehind = ""  # comments behind translation item
+
+# ToDo: LineId for error messages and other ...
 
     #--- translation ---
     
     @property
-    def translation(self):
-        return self.__translation
+    def translationText(self):
+        return self.__translationText
 
-    @translation.setter
-    def translation(self, translation):
-        self.__translation = translation
+    @translationText.setter
+    def translationText(self, translation):
+        self.__translationText = translation
 
     #--- preLines ---
     
@@ -53,7 +55,7 @@ class jLangItem:
     def preLines(self):
         return self.__preLines
 
-    @translation.setter
+    @preLines.setter
     def preLines(self, preLines):
         self.__preLines = preLines
 
@@ -69,14 +71,14 @@ class jLangItem:
 
     def hasTranslation(self):
         bExist = True
-        if (len(self.__translation) < 1):
+        if (len(self.__translationText) < 1):
             bExist = True
 
         return bExist
 
     def hasTranslation(self):
         bExist = True
-        if (len(self.__translation) < 1):
+        if (len(self.__translationText) < 1):
             bExist = True
 
         return bExist
