@@ -166,26 +166,40 @@ class jLangFileList:
     def matchFileName(self, sourceFileName="", srcLangId = ""):
 
         try:
-            CheckId = srcLangId + '.'
+            scrStartId = srcLangId + '.'
+            trgStartId = self.__langId + '.'
 
-            # First has '-' and point -> remove lang ..
-            starts with ...
+            #--- prepare comparison name --------------------------
+            
+            hasLangId = False
 
+            shortCompareName = sourceFileName
+            if (sourceFileName.startswith(scrStartId)):
+                shortCompareName = shortCompareName.replace (scrStartId, '')
+                
+            #--- compare short -----------------------------------
+            
+            matched = ''
+            
+            #
+            if (shortCompareName in self.__fileNames):
+                matched = shortCompareName
+            else:
+                longCompareName = trgStartId + shortCompareName
+                if (shortCompareName in self.__fileNames):
+                    matched = shortCompareName
 
-            # Not found . add lang
-            if in ...
-
-            except Exception as ex:
-                print(ex)
+        except Exception as ex:
+            print(ex)
 
         # --------------------------------------------------------------------
         #
         # --------------------------------------------------------------------
 
         finally:
-            print('exit matchFileName')
+            print('exit matchFileName: "' + matched +'"')
 
-        return
+        return matched
 
     # ... lang file name :
     #   a) exact filename exists
