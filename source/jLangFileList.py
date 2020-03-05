@@ -63,12 +63,12 @@ class jLangFileList:
 #        self.__folderName = folderName  # comments behind translation item
 
     def __init__(self, folderName, langId):
-        self.__folderName = ""  #
+        self.__folderName = folderName  #
         self.__langId = langId    # de-DE
 
-        self.__fileNames = []  # empty lines and comments before item line
+        self.__fileNames = []  # List of files without path to file
 
-        collectFilenames ()
+        self.collectFileNames ()
         
     #--- translation ---
     
@@ -101,16 +101,10 @@ class jLangFileList:
         self.__folderName = folderName
 
     # ================================================================================
-    # extraction of file modules
+    # collect *.ini filed from folder
     # ================================================================================
 
-    #	def _initLists(self):
-    #		# read modules file and assign to lists
-    #		self.assignFileContent(self.langPathFileName)
-
-    # -------------------------------------------------------------------------------
-
-    def collectFilenames (self, newFolderName):
+    def collectFileNames (self, newFolderName=""):
     
         try:
             print('*********************************************************')
@@ -130,21 +124,19 @@ class jLangFileList:
                 Wait4Key()
                 sys.exit(2)
 
-            
 
             # --------------------------------------------------------------------
             # All files in source
             # --------------------------------------------------------------------
-    
-            allFiles = [f for f in os.listdir(self.__folderName) if os.path.isfile(os.path.join(self.__folderName, f))]
-    
-            for sourceFile in allFiles:
-                
-                # ends with .ini
-                
-                
-                print('sourceFile: ' + sourceFile)
 
+            actFolderName = self.__folderName
+            allFiles = [f for f in os.listdir(actFolderName) if os.path.isfile(os.path.join(actFolderName, f))]
+    
+            for actFile in allFiles:
+                # ends with .ini
+                if (actFile.endswith('.ini')):
+                    self.__fileNames.append(os.path.join(actFolderName, actFile))
+                    print('sourceFile: ' + actFile)
 
 
         except Exception as ex:
@@ -159,8 +151,41 @@ class jLangFileList:
 
         return
 
+    # ================================================================================
+    # match file name
+    # ================================================================================
+
+    # in ..\en-GB\en-GB.lib_joomla.ini -> ..\de-DE\de-DE.lib_joomla.ini
+    # in \en-GB\lib_joomla.ini -> ..\de-DE\lib_joomla.ini
+    # in \en-GB\en-GB.lib_joomla.ini -> ..\de-DE\de-DE.lib_joomla.ini
+    # in \en-GB\en-GB.lib_joomla.ini -> ..\de-DE\lib_joomla.ini
+    # in \en-GB\lib_joomla.ini -> ..\de-DE\de-DE.lib_joomla.ini
+
+    # Search for a compatible file name in found file list
+    # Path to files are not given on both sides
+    def matchFileName(self, sourceFileName="", srcLangId = ""):
+
+        try:
+            CheckId = srcLangId + '.'
+
+            # First has '-' and point -> remove lang ..
+            starts with ...
 
 
+            # Not found . add lang
+            if in ...
+
+            except Exception as ex:
+                print(ex)
+
+        # --------------------------------------------------------------------
+        #
+        # --------------------------------------------------------------------
+
+        finally:
+            print('exit matchFileName')
+
+        return
 
     # ... lang file name :
     #   a) exact filename exists
@@ -195,8 +220,19 @@ class jLangFileList:
 
         return bExist
 
+    def toString(self):
 
-##-------------------------------------------------------------------------------
+        print ("--- LangfileList: ---------------")
+
+        print ("folderName: " + self.__folderName)
+        print ("langId: " + self.__langId)
+
+        for actFile in self.__fileNames:
+            print ("File: " + actFile)
+
+        print ("---------------------------------")
+
+        ##-------------------------------------------------------------------------------
 
 def dummyFunction():
     print('    >>> Enter dummyFunction: ')
@@ -255,12 +291,12 @@ def print_end(start):
 if __name__ == '__main__':
     optlist, args = getopt.getopt(sys.argv[1:], 'p:12345h')
 
-    langPathFileName = os.path.join ('..', '.regression', 'de-DE')
+    langPath = os.path.join ('..', '.regression', 'de-DE')
     langId = 'de-DE'
 
     for i, j in optlist:
         if i == "-p":
-            langPathFileName = j
+            langPath = j
 
         if i == "-i":
             langId = j
@@ -289,8 +325,13 @@ if __name__ == '__main__':
 
     print_header(start)
 
+#f:\Entwickl\rsgallery2\joomlaLangManager\.regression\de-DE\
+
     # init class
-    FileList = jLangFileList(langPathFileName)
+    FileList = jLangFileList(langPath, 'de_DE')
+
+    FileList.toString ()
+
 #    LangFile.mergedToFile("", True)
 
 #   LangFile.Write (bak?)
