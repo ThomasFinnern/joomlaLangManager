@@ -54,7 +54,7 @@ LeaveOut_05 = False
 # LangFileList
 # ================================================================================
 
-class jLangFileList:
+class jLangFilesList:
     """ Contains an translation item with references to empty lines and comments """
 
 #    def __init__(self, translation, preLines, folderName):
@@ -344,7 +344,7 @@ if __name__ == '__main__':
 #f:\Entwickl\rsgallery2\joomlaLangManager\.regression\de-DE\
 
     # init class
-    FileList = jLangFileList(langPath, 'de_DE')
+    FileList = jLangFilesList(langPath, 'de_DE')
 
     FileList.toString ()
 

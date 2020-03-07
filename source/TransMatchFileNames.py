@@ -8,7 +8,7 @@ import io
 import shutil
 
 from datetime import datetime
-from jLangFileList import jLangFileList
+from jLangFilesList import jLangFilesList
 
 HELP_MSG = """
 
@@ -79,12 +79,17 @@ class TransMatchFileNames:
 
         self.__srcFiles = []  #
         self.__trgFiles = []  #
-
+        
         self.__matches = {}  #
+        self.__missingFiles = []  #
+        self.__obsoleteFiles = []  #
 
         self.collectFileNames ()
         self.matchFileNames ()
 
+        self.check4obsoletfiles()
+    
+    
     #--- source path ---
     
     @property
@@ -126,6 +131,36 @@ class TransMatchFileNames:
     def langId(self, trgLangId):
         self.__trgLangId = trgLangId
         
+    # --- matching files ---
+
+    @property
+    def matches(self):
+        return self.__matches
+
+    @matches.setter
+    def langId(self, matches):
+        self.__matches = matches
+
+    # --- missing files  ---
+
+    @property
+    def missingFiles(self):
+        return self.__missingFiles
+
+    @missingFiles.setter
+    def langId(self, missingFiles):
+        self.__missingFiles = missingFiles
+
+    # --- obsolete files ---
+
+    @property
+    def obsoleteFiles(self):
+        return self.__obsoleteFiles
+
+    @obsoleteFiles.setter
+    def langId(self, obsoleteFiles):
+        self.__obsoleteFiles = obsoleteFiles
+
     # ================================================================================
     # collect *.ini filed from folder
     # ================================================================================
@@ -174,8 +209,8 @@ class TransMatchFileNames:
                 Wait4Key()
                 sys.exit(2)
 
-            self.__srcFiles = jLangFileList (self.srcPath, self.srcLangId)
-            self.__trgFiles = jLangFileList (self.trgPath, self.trgLangId)
+            self.__srcFiles = jLangFilesList (self.srcPath, self.srcLangId)
+            self.__trgFiles = jLangFilesList (self.trgPath, self.trgLangId)
 
         # toDo: len lists
         except Exception as ex:
@@ -223,7 +258,7 @@ class TransMatchFileNames:
 
                     self.__matches [srcFilePath] = trgFilePath #
                 else:
-                    pass
+                    self.__missingFiles.append(srcFile)
 
         except Exception as ex:
             print(ex)
@@ -238,38 +273,40 @@ class TransMatchFileNames:
         # toDo: print len lists
         return
 
+
+
+
     # ... lang file name :
     #   a) exact filename exists
     #   b) check if landId.filename exist
     #   c) a/b with input lang name without own lang id
 
-    def hasFile(self, FileName):
-        bExist = True
-        if (len(self.__translation) < 1):
-            bExist = True
+    def check4obsoletfiles (self):
+        
+        try:
 
-        return bExist
+            self.__obsoleteFiles = []  #
 
-    def hasLangFile(self):
-        bExist = True
-        if (len(self.__translation) < 1):
-            bExist = True
+            for trgFile in self.__trgFiles.fileNames:
+                # matching translation file . May have
+                # different langIds or missing lang Ids
+                matchFile = self.__srcFiles.matchFileName (trgFile, self.__trgLangId);
 
-        return bExist
+                if (not len(matchFile) > 0):
+                    self.__obsoleteFiles.append(trgFile)
 
-    def hasPreLines(self):
-        bExist = True
-        if (len(self.__preLines) < 1):
-            bExist = True
+        except Exception as ex:
+            print(ex)
 
-        return bExist
+        # --------------------------------------------------------------------
+        #
+        # --------------------------------------------------------------------
 
-    def hasfolderName(self):
-        bExist = True
-        if (len(self.__folderName) < 1):
-            bExist = True
+        finally:
+            print('exit matchFileName: "' + str(len(self.__matches)) +'"')
 
-        return bExist
+        # toDo: print len lists
+        return
 
     def toStringMatches(self):
     
@@ -278,6 +315,33 @@ class TransMatchFileNames:
         for srcFile, trgfile in self.__matches.items():
             outTxt += '  "' + srcFile + '" <=> "' + trgfile + '"' + '\n'
     
+        return outTxt
+
+    def toStringMissing(self):
+    
+        outTxt = 'missing: ' + str(len(self.__missingFiles)) + '\n'
+    
+        for missingFile in self.__missingFiles:
+            outTxt += '  "' + missingFile + '"' + '\n'
+    
+        return outTxt
+
+    def toStringObsolete(self):
+    
+        outTxt = 'obsolete: ' + str(len(self.__obsoleteFiles)) + '\n'
+    
+        for obsoleteFile in self.__obsoleteFiles:
+            outTxt += '  "' + obsoleteFile + '"' + '\n'
+    
+        return outTxt
+
+    def toStringMatches(self):
+    
+        outTxt = 'matches: ' + str(len(self.__matches)) + '\n'
+    
+        for srcFile, trgfile in self.__matches.items():
+            outTxt += '  "' + srcFile + '" <=> "' + trgfile + '"' + '\n'
+
         return outTxt
 
     # toDo use strings ;-)
@@ -290,13 +354,33 @@ class TransMatchFileNames:
         outTxt += "trgPath: " + self.__trgPath + '\n'
         outTxt += "trgLangId: " + self.__trgLangId + '\n'
 
+        outTxt += '\n'
         outTxt += self.toStringMatches()
+        
+        outTxt += '\n'
+        outTxt += self.toStringMissing()
+        
+        outTxt += '\n'
+        outTxt += self.toStringObsolete()
 
         outTxt += "---------------------------------------"
         
         return  outTxt
+
+    def writeLogFile (self, logPathFileName, doAppend=False):
     
-    ##-------------------------------------------------------------------------------
+        # mode = doAppend ? "o" : "w"
+        if (doAppend):
+            mode =  "o"
+        else:
+            mode = "w"
+        
+        logTxt = self.toString()
+        
+        with open(logPathFileName, mode) as logFile:
+            logFile.write(logTxt)
+    
+##-------------------------------------------------------------------------------
 
 def dummyFunction():
     print('    >>> Enter dummyFunction: ')
@@ -355,9 +439,11 @@ def print_end(start):
 if __name__ == '__main__':
     optlist, args = getopt.getopt(sys.argv[1:], 's:t:a:b:12345h')
 
-    srcPath = os.path.join ('..', '.regression', 'en-GB')
+    #srcPath = os.path.join ('..', '.regression', 'en-GB')
+    srcPath = os.path.join ('..', '.sandbox', 'en-GB')
     srcLangId = 'en-GB'
-    trgPath = os.path.join ('..', '.regression', 'de-DE')
+    #trgPath = os.path.join ('..', '.regression', 'de-DE')
+    trgPath = os.path.join ('..', '.sandbox', 'de-DE')
     trgLangId = 'de-DE'
 
     for i, j in optlist:
@@ -405,9 +491,6 @@ if __name__ == '__main__':
     # does print all
     print (FileList.toString())
 
-#    LangFile.mergedToFile("", True)
-
-#   LangFile.Write (bak?)
-#    FileList.translationsToFile (langPathFileName + '.new', False, False)
+    FileList.writeLogFile ('.\logTransMatch.txt', True)
     
     print_end(start)
