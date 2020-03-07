@@ -135,7 +135,8 @@ class jLangFileList:
             for actFile in allFiles:
                 # ends with .ini
                 if (actFile.endswith('.ini')):
-                    self.__fileNames.append(os.path.join(actFolderName, actFile))
+#                    self.__fileNames.append(os.path.join(actFolderName, actFile)) # path not required for matches
+                    self.__fileNames.append(actFile)
                     print('sourceFile: ' + actFile)
 
 
@@ -186,7 +187,7 @@ class jLangFileList:
                 matched = shortCompareName
             else:
                 longCompareName = trgStartId + shortCompareName
-                if (shortCompareName in self.__fileNames):
+                if (longCompareName in self.__fileNames):
                     matched = shortCompareName
 
         except Exception as ex:
@@ -234,6 +235,7 @@ class jLangFileList:
 
         return bExist
 
+    # toDo use strings ;-)
     def toString(self):
 
         print ("--- LangfileList: ---------------")

@@ -80,41 +80,52 @@ class TransMatchFileNames:
         self.__srcFiles = []  #
         self.__trgFiles = []  #
 
-        self.__matches = []  #
+        self.__matches = {}  #
 
         self.collectFileNames ()
         self.matchFileNames ()
 
-    #--- interface ---
+    #--- source path ---
     
     @property
-    def langId(self):
-        return self.__langId
+    def srcPath(self):
+        return self.__srcPath
 
-    @langId.setter
-    def langId(self, langId):
-        self.__langId = langId
+    @srcPath.setter
+    def langId(self, srcPath):
+        self.__srcPath = srcPath
 
-    #--- fileNames ---
+    #--- source lang id ---
     
     @property
-    def fileNames(self):
-        return self.__fileNames
+    def srcLangId(self):
+        return self.__srcLangId
 
-    @fileNames.setter
-    def fileNames(self, fileNames):
-        self.__fileNames = fileNames
+    @srcLangId.setter
+    def langId(self, srcLangId):
+        self.__srcLangId = srcLangId
 
-    #--- folderName ---
+
+    #--- target path ---
     
     @property
-    def folderName(self):
-        return self.__folderName
+    def trgPath(self):
+        return self.__trgPath
 
-    @folderName.setter
-    def translation(self, folderName):
-        self.__folderName = folderName
+    @trgPath.setter
+    def langId(self, trgPath):
+        self.__trgPath = trgPath
 
+    # --- target lang id ---
+
+    @property
+    def trgLangId(self):
+        return self.__trgLangId
+
+    @trgLangId.setter
+    def langId(self, trgLangId):
+        self.__trgLangId = trgLangId
+        
     # ================================================================================
     # collect *.ini filed from folder
     # ================================================================================
@@ -132,7 +143,7 @@ class TransMatchFileNames:
 
             # New name given
             if (len(srcPath) > 0):
-                self.srcPath = srcPath
+                self.__srcPath = srcPath
 
             # New name given
             if (len(srcLangId) > 0):
@@ -146,16 +157,25 @@ class TransMatchFileNames:
             if (len(trgLangId) > 0):
                 self.__trgLangId = trgLangId
 
-            if not testDir(self.__folderName):
+
+            if not testDir(self.srcPath):
                 print('***************************************************')
-                print('!!! Folder path not found !!! ? -l ' + self.__folderName + ' ?')
+                print('!!! Source folder path not found !!! ? -l ' + self.__srcPath + ' ?')
                 print('***************************************************')
                 print(HELP_MSG)
                 Wait4Key()
                 sys.exit(2)
 
-            self.__srcFiles = jLangFileList (srcPath, srcLangId)
-            self.__trgFiles = jLangFileList (trgPath, trgLangId)
+            if not testDir(self.__trgPath):
+                print('***************************************************')
+                print('!!! Target folder path not found !!! ? -l ' + self.__trgPath + ' ?')
+                print('***************************************************')
+                print(HELP_MSG)
+                Wait4Key()
+                sys.exit(2)
+
+            self.__srcFiles = jLangFileList (self.srcPath, self.srcLangId)
+            self.__trgFiles = jLangFileList (self.trgPath, self.trgLangId)
 
         # toDo: len lists
         except Exception as ex:
@@ -190,19 +210,20 @@ class TransMatchFileNames:
 
         try:
 
-            self.__matches = []  #
+            self.__matches = {}  #
 
             for srcFile in self.__srcFiles.fileNames:
                 # matching translation file . May have
                 # different langIds or missing lang Ids
-                matchFile = self.__trgFiles.match (srcFile);
+                matchFile = self.__trgFiles.matchFileName (srcFile, self.__srcLangId);
 
                 if (len(matchFile) > 0):
                     srcFilePath = os.path.join (self.__srcPath, srcFile)
                     trgFilePath = os.path.join (self.__trgPath, matchFile)
 
                     self.__matches [srcFilePath] = trgFilePath #
-
+                else:
+                    pass
 
         except Exception as ex:
             print(ex)
@@ -212,7 +233,7 @@ class TransMatchFileNames:
         # --------------------------------------------------------------------
 
         finally:
-            print('exit matchFileName: "' + len(self.__matches) +'"')
+            print('exit matchFileName: "' + str(len(self.__matches)) +'"')
 
         # toDo: print len lists
         return
@@ -250,19 +271,32 @@ class TransMatchFileNames:
 
         return bExist
 
+    def toStringMatches(self):
+    
+        outTxt = 'matches: ' + str(len(self.__matches)) + '\n'
+    
+        for srcFile, trgfile in self.__matches.items():
+            outTxt += '  "' + srcFile + '" <=> "' + trgfile + '"' + '\n'
+    
+        return outTxt
+
+    # toDo use strings ;-)
     def toString(self):
 
-        print ("--- LangfileList: ---------------")
+        outTxt = "--- TransMatchFileNames: ---------------" + '\n'
 
-        print ("folderName: " + self.__folderName)
-        print ("langId: " + self.__langId)
+        outTxt += "srcPath: " + self.__srcPath + '\n'
+        outTxt += "srcLangId: " + self.__srcLangId + '\n'
+        outTxt += "trgPath: " + self.__trgPath + '\n'
+        outTxt += "trgLangId: " + self.__trgLangId + '\n'
 
-        for actFile in self.__fileNames:
-            print ("File: " + actFile)
+        outTxt += self.toStringMatches()
 
-        print ("---------------------------------")
-
-        ##-------------------------------------------------------------------------------
+        outTxt += "---------------------------------------"
+        
+        return  outTxt
+    
+    ##-------------------------------------------------------------------------------
 
 def dummyFunction():
     print('    >>> Enter dummyFunction: ')
@@ -366,9 +400,10 @@ if __name__ == '__main__':
 #f:\Entwickl\rsgallery2\joomlaLangManager\.regression\de-DE\
 
     # init class
-    FileList = TransMatchFileNames(langPath, 'de_DE')
+    FileList = TransMatchFileNames(srcPath, srcLangId, trgPath, trgLangId)
 
-    FileList.toString ()
+    # does print all
+    print (FileList.toString())
 
 #    LangFile.mergedToFile("", True)
 
