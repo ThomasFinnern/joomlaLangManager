@@ -38,6 +38,7 @@ class jLangItem:
         self.__commentsBehind = ""  # comments behind translation item
 #        self.__translationId = ""
 #        self.__lineIdx = ""
+#        self.__isSame = False #Exat same text as original
 
 # ToDo: LineId for error messages and other ...
 

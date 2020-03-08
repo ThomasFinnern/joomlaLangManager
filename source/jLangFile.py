@@ -37,7 +37,7 @@ ToDo:
   * sorting,
   * append comment to translation (ID -> line index )
   * ? Flag needed for /COM_ID = "..."/  or /COM_ID="..."
-  * 
+  * tell about double on read -> extra list in class ?? -> log -> ???
   * 
 
 ? * sort
@@ -67,8 +67,10 @@ class jLangFile:
     def __init__(self, langPathFileName):
         self.langPathFileName = langPathFileName  # CVS modules file name with path
 
+        # toDo: remove file lines
         self._fileLines = []  # File lines to reconstruct the file in old order
         self._translations = {}  # All translations
+        self._surplusTranslations = {}
         self._langId = 'en-GB'  # lang ID
         self._isSystType = False  # lang file type (normal/sys)
         self._header = []  # Start comments on translation file
@@ -470,6 +472,14 @@ class jLangFile:
             file = open(self.langPathFileName, "w", encoding="utf-8", newline="\n")
             for line in newLines:
                 file.write(line + '\n')
+                
+            if (len(self._surplusTranslations) > 0):
+                newLines = self.collectedObsoleteLines()
+
+                file.write('\n' + '; surplus / obsolete translations' + '\n')
+                for line in newLines:
+                    file.write(line + '\n')
+
             file.close()
 
             isSaved = True
@@ -491,7 +501,6 @@ class jLangFile:
         collectedLines = []
 
         try:
-            print('file lines: ' + str(len(self._fileLines)))
             print('file translations: ' + str(len(self._translations)))
 
             # header
@@ -504,18 +513,17 @@ class jLangFile:
             for transId, translation in self._translations.items():
                 idx += 1
 
-                #self.__translation = ""  # item translation
-                #self.__preLines = []  # empty lines and comments before item line
-                #self.__commentsBehind = ""  # comments behind translation item
-
-                translationText = translation.translationText
-
+                # pre lines
                 for preLine in translation.preLines:
                     collectedLines.append(preLine)
-
+                
+                # translation
+                translationText = translation.translationText
                 line = transId  + '="' + translationText + '"'
 
                 # ToDo: __commentsBehind
+                #
+                
                 collectedLines.append(line)
 
         except Exception as ex:
@@ -525,40 +533,42 @@ class jLangFile:
         print('    <<< Exit collectedTranslationLines: ' + str(len(collectedLines)))
         return collectedLines
 
+    # -------------------------------------------------------------------------------
+    #
+    def collectedObsoleteLines(self):
+        print('    >>> Enter collectedObsoleteLines: ')
 
-##-------------------------------------------------------------------------------
-##
-# def yyy (XXX):
-#	print ('    >>> Enter yyy: ')
-#	print ('       XXX: "' + XXX + '"')
-#
-#	ZZZ = ""
-#
-#	try:
-#
-#
-#	except Exception as ex:
-#		print(ex)
-#
-#	print ('    <<< Exit yyy: ' + ZZZ)
-#	return ZZZ
+        collectedLines = []
 
-##-------------------------------------------------------------------------------
-##
-# def yyy (XXX):
-#	print ('    >>> Enter yyy: ')
-#	print ('       XXX: "' + XXX + '"')
-#
-#	ZZZ = ""
-#
-#	try:
-#
-#
-#	except Exception as ex:
-#		print(ex)
-#
-#	print ('    <<< Exit yyy: ' + ZZZ)
-#	return ZZZ
+        try:
+            print('file translations: ' + str(len(self._surplusTranslations)))
+
+            # translation lines
+            idx = 0
+            # check each line for existing translation
+            for transId, translation in self._surplusTranslations.items():
+                idx += 1
+
+                # pre lines
+                for preLine in translation.preLines:
+                    collectedLines.append(preLine)
+
+                # translation
+                translationText = translation.translationText
+                line = transId + '="' + translationText + '"'
+
+                # ToDo: __commentsBehind
+                #
+
+                collectedLines.append(line)
+
+        except Exception as ex:
+            print(ex)
+
+        #        print('    <<< Exit collectedTranslationLines: ' + str(collectedLines.count()))
+        print('    <<< Exit collectedObsoleteLines: ' + str(len(collectedLines)))
+        return collectedLines
+
 
 ##-------------------------------------------------------------------------------
 

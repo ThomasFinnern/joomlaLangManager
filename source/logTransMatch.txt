@@ -1,0 +1,17 @@
+--- TransMatchFileNames: ---------------
+srcPath: ..\.sandbox\en-GB
+srcLangId: en-GB
+trgPath: ..\.sandbox\de-DE
+trgLangId: de-DE
+
+matches: 5
+  "..\.sandbox\en-GB\com_content.sys.ini" <=> "..\.sandbox\de-DE\com_content.sys.ini"
+  "..\.sandbox\en-GB\com_menus.sys.ini" <=> "..\.sandbox\de-DE\com_menus.sys.ini"
+  "..\.sandbox\en-GB\com_users.sys.ini" <=> "..\.sandbox\de-DE\com_users.sys.ini"
+  "..\.sandbox\en-GB\lib_joomla.ini" <=> "..\.sandbox\de-DE\lib_joomla.ini"
+  "..\.sandbox\en-GB\mod_menu.ini" <=> "..\.sandbox\de-DE\mod_menu.ini"
+
+missing: 0
+
+obsolete: 0
+---------------------------------------

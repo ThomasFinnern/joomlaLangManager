@@ -10,6 +10,7 @@ import io
 from datetime import datetime
 
 from jLangFile import *
+from jLangItem import *
 
 
 HELP_MSG = """
@@ -139,6 +140,9 @@ def TranslateLang (SourceFile, TargetFile):
 		# ToDo: Test empty files !!!
 		target = jLangFile(TargetFile)
 		destination = jLangFile(destinationFile)
+		
+		# keep header
+		destination._header = target._header
 
 		# --------------------------------------------------------------------
 		# read source file
@@ -154,45 +158,49 @@ def TranslateLang (SourceFile, TargetFile):
 		trgTranslations = target.translations()
 
 		#--------------------------------------------------------------------
-		# create empty translations
+		# read translations in order of source
 		#--------------------------------------------------------------------
 
-		isChanged = False
-
-		# Texts need to be translated
+		# Plain texts to be translated -> for file
 		translationOriginals = []
 
 		idx = 0
 		
 		# create all translations
-#		for transId, translation in srcTranslations.items():
 		for transId in srcTranslations.keys():
-			idx += 1
-			
-			# translation found ?
+
+			# translation already done ?
 			if (transId in trgTranslations):
 				translation = trgTranslations[transId]
 			else:
-				translation [transId] = jLangItem()
-				
-				isChanged = True
+				# empty item
+				translation = jLangItem()
+			
 				# keep naked original texts for 'auto' translation
-				translationOriginals.append (srcTranslations [transId])
-
+				translationOriginals.append(srcTranslations[transId].translationText)
+				
 			destination.set (transId, translation)
+			
+			idx += 1
+		
+		# find obsolete / surplus translations
+		destination._surplusTranslations = {}
 
-			# ToDo Missing / Merge / empty lines ...
+		for transId in trgTranslations.keys():
+
+			# translation not existing source ?
+			if (not transId in srcTranslations):
+				destination._surplusTranslations [transId] = trgTranslations[transId]
 
 		#--------------------------------------------------------------------
 		# results to file
 		#--------------------------------------------------------------------
 
-		if (isChanged):
-			destination.translationsToFile ("", False, False)
+		destination.translationsToFile ("", False, False)
 
-			orignalTextFile  = TargetFile + '.txt'
-			with open(orignalTextFile, mode='wt', encoding='utf-8') as myfile:
-				myfile.write('\n'.join(translationOriginals))
+		orignalTextFile  = TargetFile + '.txt'
+		with open(orignalTextFile, mode='wt', encoding='utf-8') as myfile:
+			myfile.write('\n'.join(translationOriginals))
 
 		#--------------------------------------------------------------------
 		#
