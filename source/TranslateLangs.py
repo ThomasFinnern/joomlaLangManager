@@ -9,7 +9,8 @@ import io
 
 from datetime import datetime
 
-from jLangFile import *
+from TransMatchFileNames import TransMatchFileNames
+from TranslateLang import TranslateLang
 
 HELP_MSG = """
 Supports translation of joomla lang string to other language
@@ -68,132 +69,127 @@ LeaveOut_05 = False
 # TranslateLangs
 # ================================================================================
 
-def TranslateLangs(SourceFolder, TargetFolder, TargetLang):
-	try:
-		print('*********************************************************')
-		print('TranslateLangs')
-		print('SourceFolder: ' + SourceFolder)
-		print('TargetFolder: ' + TargetFolder)
-		print('TargetLang: ' + TargetLang)
-		print('---------------------------------------------------------')
+class TranslateLangs:
+	def __init__(self, srcPath, srcLangId, trgPath, trgLangId):
+		self.__srcPath = srcPath
+		self.__srcLangId = srcLangId
+		self.__trgPath = trgPath
+		self.__trgLangId = trgLangId
+		
+		self.__matches = {}  #
+		self.__matchResults = object()
+		
+		self.matchFileNames ()
+		self.doTranslateLangs ()
 
-		# ---------------------------------------------
-		# check input
-		# ---------------------------------------------
-
-		if SourceFolder == '':
+	def matchFileNames (self, srcPath="", srcLangId="", trgPath="", trgLangId=""):
+		
+		# New name given
+		if (len(srcPath) > 0):
+			self.__srcPath = srcPath
+		
+		# New name given
+		if (len(srcLangId) > 0):
+			self.__srcLangId = srcLangId
+		
+		# New name given
+		if (len(trgPath) > 0):
+			self.__trgPath = trgPath
+		
+		# New name given
+		if (len(trgLangId) > 0):
+			self.__trgLangId = trgLangId
+		
+		if not testDir(self.__srcPath):
 			print('***************************************************')
-			print('!!! Source folder (SourceFolder) name is mandatory !!!')
-			print('***************************************************')
-			print(HELP_MSG)
-			Wait4Key()
-			sys.exit(1)
-
-		if not testDir(SourceFolder):
-			print('***************************************************')
-			print('!!! Source folder path not found !!! ? -l ' + SourceFolder + ' ?')
+			print('!!! Source folder path not found !!! ? -l ' + self.__srcPath + ' ?')
 			print('***************************************************')
 			print(HELP_MSG)
 			Wait4Key()
 			sys.exit(2)
-
-		# --------------------------------------------------------------------
-
-		if TargetFolder == '':
+		
+		if not testDir(self.__trgPath):
 			print('***************************************************')
-			print('!!! Target folder name is mandatory !!!')
+			print('!!! Target folder path not found !!! ? -l ' + self.__trgPath + ' ?')
 			print('***************************************************')
 			print(HELP_MSG)
 			Wait4Key()
-			sys.exit(3)
+			sys.exit(2)
+		
+		# TransMatchFileNames
+		self.__matchResults = TransMatchFileNames (self.__srcPath, self.__srcLangId, self.__trgPath, self.__trgLangId)
+		self.__matches =  self.__matchResults.matches
 
-		if not testDir(TargetFolder):
-			print('***************************************************')
-			print('!!! Target folder (TargetFolder) path not found !!! ? -l ' + TargetFolder + ' ?')
-			print('***************************************************')
-			print(HELP_MSG)
-			Wait4Key()
-			sys.exit(4)
 
-		# --------------------------------------------------------------------
-		# All files in source
-		# --------------------------------------------------------------------
 
-		allFiles = [f for f in os.listdir(SourceFolder) if os.path.isfile(os.path.join(SourceFolder, f))]
 
-		for sourceFile in allFiles:
-			print('sourceFile: ' + sourceFile)
 
-		return
 
-		# --------------------------------------------------------------------
-		# read source file
-		# --------------------------------------------------------------------
 
-		source = jLangFile(SourceFolder)
 
+
+	def doTranslateLangs (self):
+		try:
+			print('*********************************************************')
+			print('doTranslateLangs')
+	
+			# --------------------------------------------------------------------
+			# All given files
+			# --------------------------------------------------------------------
+			
+			outTxt = 'matches: ' + str(len(self.__matches)) + '\n'
+			
+			hasError = False
+			
+			for srcFile, trgfile in self.__matches.items():
+				outTxt += '  "' + srcFile + '" <=> "' + trgfile + '"' + '\n'
+				
+				#SourceFile = os.path.join (self.__srcPath, srcFile)
+				SourceFile = srcFile
+				#TargetFile = os.path.join (self.__trgPath, trgfile)
+				TargetFile = trgfile
+				
+				# --------------------------------------------------------------------
+				# translate file
+				# --------------------------------------------------------------------
+
+#				hasError = hasError and TranslateLang.TranslateLang (SourceFile, TargetFile)
+				
+				TranslateLang (SourceFile, TargetFile)
+				#TranslateLang.TranslateLang (SourceFile, TargetFile)
+			
 		# --------------------------------------------------------------------
 		#
 		# --------------------------------------------------------------------
-
-		srcTranslations = source.translations()
-		trgTranslations = target.translations()
-
+		except Exception as ex:
+			print(ex)
+	
 		# --------------------------------------------------------------------
-		# create empty translations
+		#
 		# --------------------------------------------------------------------
+	
+		finally:
+			print('exit TranslateLangs: Error:')
+	
+		return outTxt
+	
 
-		isChanged = False
-
-		# Texts need to be translated
-		translationOriginals = []
-
-		# create all translations
-		#       for transId, translation in srcTranslations.items():
-		for transId in srcTranslations.keys():
-
-			# translation found ?
-			if (transId in trgTranslations):
-				translation = trgTranslations[transId]
-			else:
-				translation = "!!!"
-				isChanged = True
-				# keep naked original texts for 'auto' translation
-				translationOriginals.append(srcTranslations[transId])
-
-			destination.set(transId, translation)
-
-		# ToDo Missing / Merge / empty lines ...
-
-		# --------------------------------------------------------------------
-		# results to file
-		# --------------------------------------------------------------------
-
-		if (isChanged):
-			destination.translationsToFile("", False, False)
-
-			orignalTextFile = TargetFolder + '.txt'
-			with open(orignalTextFile, mode='wt', encoding='utf-8') as myfile:
-				myfile.write('\n'.join(translationOriginals))
-
-	# --------------------------------------------------------------------
-	#
-	# --------------------------------------------------------------------
-
-
-	except Exception as ex:
-	    print(ex)
-
-	# --------------------------------------------------------------------
-	#
-	# --------------------------------------------------------------------
-
-	finally:
-	    print('exit TranslateLangs')
-
-	return
-
-
+	def toString(self):
+		outTxt = "--- TranslateLangs: ---------------" + '\n'
+	
+	
+	def writeLogFile(self, logPathFileName, doAppend=False):
+		# mode = doAppend ? "o" : "w"
+		if (doAppend):
+			mode = "o"
+		else:
+			mode = "w"
+		
+		logTxt = self.toString()
+		
+		#with open(logPathFileName, mode) as logFile:
+		#	logFile.write(logTxt)
+	
 ##-------------------------------------------------------------------------------
 
 def Wait4Key():
@@ -243,23 +239,25 @@ def print_end(start):
 # ================================================================================
 
 if __name__ == '__main__':
-	optlist, args = getopt.getopt(sys.argv[1:], 's:f:y:12345h')
-
-	#   SourceFolder = ''
-	#   StandardFile = ''
-	#   SysFile = ''
-	SourceFolder = '..\.sandbox\en-GB'
-	TargetFolder = '..\.sandbox\de-DE'
-	TargetLang = 'de-DE'
-
+	optlist, args = getopt.getopt(sys.argv[1:], 's:t:a:b:12345h')
+	
+	srcPath = os.path.join ('..', '.regression', 'en-GB')
+	#srcPath = os.path.join('..', '.sandbox', 'en-GB')
+	srcLangId = 'en-GB'
+	trgPath = os.path.join ('..', '.regression', 'de-DE')
+	#trgPath = os.path.join('..', '.sandbox', 'de-DE')
+	trgLangId = 'de-DE'
+	
 	for i, j in optlist:
 		if i == "-s":
-			SourceFolder = j
+			srcPath = j
 		if i == "-t":
-			TargetFolder = j
-		if i == "-l":
-			TargetLang = j
-
+			srcLangId = j
+		if i == "-a":
+			trgPath = j
+		if i == "-b":
+			trgLangId = j
+		
 		if i == "-h":
 			print(HELP_MSG)
 			sys.exit(0)
@@ -284,6 +282,11 @@ if __name__ == '__main__':
 
 	print_header(start)
 
-	TranslateLangs(SourceFolder, TargetFolder, TargetLang)
-
+	Translation = TranslateLangs(srcPath, srcLangId, trgPath, trgLangId)
+	
+	# does print all
+	print(Translation.toString())
+	
+	Translation.writeLogFile('.\logTransMatch.txt', True)
+	
 	print_end(start)

@@ -264,7 +264,7 @@ class jLangFile:
     def set(self, transId, translation):
         print('    >>> Enter set: ')
         print('       transId: "' + transId + '"')
-        print('       translation: "' + translation + '"')
+        print('       translation: "' + translation.translationText + '"')
 
         try:
             self._translations[transId] = translation

@@ -68,13 +68,14 @@ LeaveOut_05 = False
 # TranslateLang
 # ================================================================================
 
-def TranslateLang (SourceFile, TargetFile, TargetLang):
+#toDo: make class with log results
+
+def TranslateLang (SourceFile, TargetFile):
 	try:
 		print ('*********************************************************')
 		print ('TranslateLang')
 		print ('SourceFile: ' + SourceFile)
 		print ('TargetFile: ' + TargetFile)
-		print ('TargetLang: ' + TargetLang)
 		print ('---------------------------------------------------------')
 
 		#---------------------------------------------
@@ -161,15 +162,19 @@ def TranslateLang (SourceFile, TargetFile, TargetLang):
 		# Texts need to be translated
 		translationOriginals = []
 
+		idx = 0
+		
 		# create all translations
 #		for transId, translation in srcTranslations.items():
 		for transId in srcTranslations.keys():
-
+			idx += 1
+			
 			# translation found ?
 			if (transId in trgTranslations):
 				translation = trgTranslations[transId]
 			else:
-				translation = "!!!"
+				translation [transId] = jLangItem()
+				
 				isChanged = True
 				# keep naked original texts for 'auto' translation
 				translationOriginals.append (srcTranslations [transId])
@@ -260,15 +265,12 @@ if __name__ == '__main__':
 #	SysFile = ''
 	SourceFile = '..\.sandbox\en-GB\com_contact.ini'
 	TargetFile = '..\.sandbox\de-DE\com_contact.ini'
-	TargetLang = 'de-DE'
 
 	for i, j in optlist:
 		if i == "-s":
 			SourceFile = j
 		if i == "-t":
 			TargetFile = j
-		if i == "-l":
-			TargetLang = j
 
 		if i == "-h":
 			print (HELP_MSG)
@@ -294,7 +296,7 @@ if __name__ == '__main__':
 
 	print_header(start)
 
-	TranslateLang (SourceFile, TargetFile, TargetLang)
+	TranslateLang (SourceFile, TargetFile)
 
 	print_end(start)
 

@@ -64,12 +64,7 @@ LeaveOut_05 = False
 # ================================================================================
 
 class TransMatchFileNames:
-    """ Contains an translation item with references to empty lines and comments """
-
-#    def __init__(self, translation, preLines, folderName):
-#        self.__translation =  translation #
-#        self.__preLines = preLines  # empty lines and comment before to item line
-#        self.__folderName = folderName  # comments behind translation item
+    """ ToDo: """
 
     def __init__(self, srcPath, srcLangId, trgPath, trgLangId):
         self.__srcPath = srcPath
@@ -193,7 +188,7 @@ class TransMatchFileNames:
                 self.__trgLangId = trgLangId
 
 
-            if not testDir(self.srcPath):
+            if not testDir(self.__srcPath):
                 print('***************************************************')
                 print('!!! Source folder path not found !!! ? -l ' + self.__srcPath + ' ?')
                 print('***************************************************')
@@ -377,8 +372,8 @@ class TransMatchFileNames:
         
         logTxt = self.toString()
         
-        with open(logPathFileName, mode) as logFile:
-            logFile.write(logTxt)
+        #with open(logPathFileName, mode) as logFile:
+        #    logFile.write(logTxt)
     
 ##-------------------------------------------------------------------------------
 
@@ -439,11 +434,11 @@ def print_end(start):
 if __name__ == '__main__':
     optlist, args = getopt.getopt(sys.argv[1:], 's:t:a:b:12345h')
 
-    #srcPath = os.path.join ('..', '.regression', 'en-GB')
-    srcPath = os.path.join ('..', '.sandbox', 'en-GB')
+    srcPath = os.path.join ('..', '.regression', 'en-GB')
+    #srcPath = os.path.join ('..', '.sandbox', 'en-GB')
     srcLangId = 'en-GB'
-    #trgPath = os.path.join ('..', '.regression', 'de-DE')
-    trgPath = os.path.join ('..', '.sandbox', 'de-DE')
+    trgPath = os.path.join ('..', '.regression', 'de-DE')
+    #trgPath = os.path.join ('..', '.sandbox', 'de-DE')
     trgLangId = 'de-DE'
 
     for i, j in optlist:
@@ -482,8 +477,6 @@ if __name__ == '__main__':
     start = datetime.today()
 
     print_header(start)
-
-#f:\Entwickl\rsgallery2\joomlaLangManager\.regression\de-DE\
 
     # init class
     FileList = TransMatchFileNames(srcPath, srcLangId, trgPath, trgLangId)

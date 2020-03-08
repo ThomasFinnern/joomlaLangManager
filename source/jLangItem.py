@@ -36,6 +36,8 @@ class jLangItem:
         self.__translationText =  ""    # item translation
         self.__preLines = []        # empty lines and comments before item line
         self.__commentsBehind = ""  # comments behind translation item
+#        self.__translationId = ""
+#        self.__lineIdx = ""
 
 # ToDo: LineId for error messages and other ...
 
