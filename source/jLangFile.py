@@ -8,8 +8,8 @@ import io
 import shutil
 
 from datetime import datetime
-
-from jLangItem import *
+from .jLangConfig import Config
+from .jLangItem import *
 
 HELP_MSG = """
 
@@ -67,13 +67,14 @@ class jLangFile:
     def __init__(self, langPathFileName):
         self.langPathFileName = langPathFileName  # CVS modules file name with path
 
-        # toDo: remove file lines
-        self._fileLines = []  # File lines to reconstruct the file in old order
+#        # toDo: remove file lines
+ #       self._fileLines = []  # File lines to reconstruct the file in old order
         self._translations = {}  # All translations
         self._surplusTranslations = {}
         self._langId = 'en-GB'  # lang ID
         self._isSystType = False  # lang file type (normal/sys)
         self._header = []  # Start comments on translation file
+        self._config = []  #
         # self._f = []  # All translations
 
         # ---------------------------------------------
@@ -129,7 +130,7 @@ class jLangFile:
 
             # reset
             self._translations = {}  # All translations
-            self._fileLines = []  # File lines to reconstruct the file in old order
+            fileLines = []  # File lines to reconstruct the file in old order
 
             # self._langId = 'en-GB'  # lang ID
             if ('.sys.' in langPathFileName):
@@ -147,13 +148,13 @@ class jLangFile:
 
             with open(langPathFileName, mode="r", encoding="utf-8") as f:
                 # toDo: Use direct in for loop
-                self._fileLines = [line.strip() for line in f]
+                fileLines = [line.strip() for line in f]
 
-                print('file lines count: ' + str(len(self._fileLines)))
+                print('file lines count: ' + str(len(fileLines)))
 
                 # All lines
                 idx = 0
-                for line in self._fileLines:
+                for line in fileLines:
                     idx += 1
 
                     #--- handle header lines -------
@@ -198,7 +199,7 @@ class jLangFile:
                             # Compare text
                             if (self._translations[transId].translationText == nextItem.translationText):
                                 logText = "Existing element found in Line " + str(idx) + ": " + transId + " = " + \
-                                          self._translations[transId]
+                                self._translations[transId]
                             else:
                                 logText = "Existing mismatching element found in Line " + str(idx) + ":\r\n" \
                                           + "1st: " + transId + " = " + self._translations[transId].translationText \
@@ -277,9 +278,6 @@ class jLangFile:
         print('    <<< Exit set: ')
         return
 
-    # --------------------------------------------------------------------
-    # determine build ID
-    # --------------------------------------------------------------------
 
     #		ZZZ = determineZZZ (langPathFileName)
     #		print ('ZZZ: ' + ZZZ)
@@ -380,67 +378,74 @@ class jLangFile:
         print('    <<< Exit mergedToFile: ' + str(isSaved))
         return isSaved
 
-    # -------------------------------------------------------------------------------
-    #
-    # ToDo: mark each translation and later check and add unused translations
-    # ToDo: leave out doubles, keep COM_RSGALLERY2_ (last char)
-    def mergedTranlationLines(self):
-        print('    >>> Enter mergedTranlationLines: ')
-        #    	print ('       XXX: "' + XXX + '"')
-
-        mergedLines = []
-
-        try:
-            print('file lines: ' + str(len(self._fileLines)))
-            print('file translations: ' + str(len(self._translations)))
-
-            idx = 0
-            # check each line for existing translation
-            for line in self._fileLines:
-                idx += 1
-
-                # comments
-                if (line.startswith(';')):
-                    mergedLines.append(line)
-                    continue
-
-                # empty lines
-                if (len(line) < 1):
-                    mergedLines.append(line)
-                    continue
-
-                # print("Line:" + line)
-
-                # --- translation split -----------------------
-
-                [pName, pTranslation] = line.split('=', maxsplit=1)
-                transId = pName.strip()
-                translationParanthesis = pTranslation.strip()
-
-                oldTtranslation = translationParanthesis [1:-1]
-
-                # translation is deleted
-                if (transId not in self._translations):
-                    # mergedLines.append(line)
-                    continue
-
-                newTranslation = self._translations[transId]
-                newLine = transId + ' = "' + newTranslation + '"'
-
-                mergedLines.append(newLine)
-
-        except Exception as ex:
-            print(ex)
-
-        #        print('    <<< Exit mergedTranlationLines: ' + str(mergedLines.count()))
-        print('    <<< Exit mergedTranlationLines: ' + str(len(mergedLines)))
-        return mergedLines
+#    # -------------------------------------------------------------------------------
+#    #
+#    # ToDo: mark each translation and later check and add unused translations
+#    # ToDo: leave out doubles, keep COM_RSGALLERY2_ (last char)
+#    def mergedTranlationLines(self):
+#        print('    >>> Enter mergedTranlationLines: ')
+#        #    	print ('       XXX: "' + XXX + '"')
+#
+#        mergedLines = []
+#
+#        try:
+#            print('file lines: ' + str(len(self._fileLines)))
+#            print('file translations: ' + str(len(self._translations)))
+#
+#            idx = 0
+#            # check each line for existing translation
+#            for line in self._fileLines:
+#                idx += 1
+#
+#                # comments
+#                if (line.startswith(';')):
+#                    mergedLines.append(line)
+#                    continue
+#
+#                # empty lines
+#                if (len(line) < 1):
+#                    mergedLines.append(line)
+#                    continue
+#
+#                # print("Line:" + line)
+#
+#                # --- translation split -----------------------
+#
+#                [pName, pTranslation] = line.split('=', maxsplit=1)
+#                transId = pName.strip()
+#                translationParanthesis = pTranslation.strip()
+#
+#                oldTtranslation = translationParanthesis [1:-1]
+#
+#                # translation is deleted
+#                if (transId not in self._translations):
+#                    # mergedLines.append(line)
+#                    continue
+#
+#                newTranslation = self._translations[transId]
+#                newLine = transId + ' = "' + newTranslation + '"'
+#
+#                mergedLines.append(newLine)
+#
+#        except Exception as ex:
+#            print(ex)
+#
+#        #        print('    <<< Exit mergedTranlationLines: ' + str(mergedLines.count()))
+#        print('    <<< Exit mergedTranlationLines: ' + str(len(mergedLines)))
+#        return mergedLines
 
     ##-------------------------------------------------------------------------------
     ## writes file with collected translations
 
-    def translationsToFile(self, newFileName="", isCreateTempFile=True,
-                   isDoBackup=True):  # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
+    def translationsToFile(self, newFileName=""):  
+        # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
+
+        isWriteEmptyTranslations = Config.__isWriteEmptyTranslations
+        isOverwriteSrcFiles = Config.__isOverwriteSrcFiles
+
+        isCreateTempFile = not isOverwriteSrcFiles
+        isDoBackup = isOverwriteSrcFiles
+    
         print('    >>> Enter mergedToFile: ')
         #        print('       isOverwrite: "' + str(isOverwrite) + '"')
         print('       isCreateTempFile: "' + str(isCreateTempFile) + '"')
@@ -450,26 +455,27 @@ class jLangFile:
 
         try:
 
-            dstName = self.langPathFileName
             # New name given
             if (len(newFileName) > 0):
                 self.langPathFileName = newFileName
 
+            dstName = self.langPathFileName
+
             # remove extension
-            dstBaseName = os.path.splitext(self.langPathFileName)[0]
+            dstBaseName = os.path.splitext(dstName)[0]
             if (isCreateTempFile):
                 dstName = dstBaseName + '.tmp'
 
-            # Vackup: original must exist
+            # Backup: original must exist
             if (isDoBackup):
                 bckName = dstBaseName + '.bak'
-                shutil.copy2(self.langPathFileName, bckName)
+                shutil.copy2(dstName, bckName)
 
-            print('writing to: "' + self.langPathFileName)
+            print('writing to: "' + dstName)
 
             newLines = self.collectedTranslationLines()
 
-            file = open(self.langPathFileName, "w", encoding="utf-8", newline="\n")
+            file = open(dstName, "w", encoding="utf-8", newline="\n")
             for line in newLines:
                 file.write(line + '\n')
                 
@@ -503,6 +509,8 @@ class jLangFile:
         try:
             print('file translations: ' + str(len(self._translations)))
 
+            isWriteEmptyTranslations = Config.__isWriteEmptyTranslations
+
             # header
             for line in self._header:
                 collectedLines.append(line)
@@ -517,14 +525,21 @@ class jLangFile:
                 for preLine in translation.preLines:
                     collectedLines.append(preLine)
                 
-                # translation
+                #--- translation -----------------------
+
                 translationText = translation.translationText
-                line = transId  + '="' + translationText + '"'
+                line = transId + '="' + translationText + '"'
+
+                # write existing translation
+                if (len(translationText) > 0):
+                    collectedLines.append(line)
+                else:
+                    if (isWriteEmptyTranslations):
+                        collectedLines.append(line)
 
                 # ToDo: __commentsBehind
                 #
                 
-                collectedLines.append(line)
 
         except Exception as ex:
             print(ex)
