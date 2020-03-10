@@ -196,7 +196,7 @@ def TranslateLang (SourceFile, TargetFile):
 		# results to file
 		#--------------------------------------------------------------------
 
-		destination.translationsToFile ("", False, False)
+		destination.translationsToFile ()
 
 		orignalTextFile  = TargetFile + '.txt'
 		with open(orignalTextFile, mode='wt', encoding='utf-8') as myfile:

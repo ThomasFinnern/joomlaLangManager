@@ -8,8 +8,9 @@ import io
 import shutil
 
 from datetime import datetime
-from .jLangConfig import Config
-from .jLangItem import *
+
+from jLangConfig import Config
+from jLangItem import *
 
 HELP_MSG = """
 
@@ -440,8 +441,7 @@ class jLangFile:
     def translationsToFile(self, newFileName=""):  
         # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
 
-        isWriteEmptyTranslations = Config.__isWriteEmptyTranslations
-        isOverwriteSrcFiles = Config.__isOverwriteSrcFiles
+        isOverwriteSrcFiles = Config.isOverwriteSrcFiles
 
         isCreateTempFile = not isOverwriteSrcFiles
         isDoBackup = isOverwriteSrcFiles
@@ -509,7 +509,7 @@ class jLangFile:
         try:
             print('file translations: ' + str(len(self._translations)))
 
-            isWriteEmptyTranslations = Config.__isWriteEmptyTranslations
+            isWriteEmptyTranslations = Config.isWriteEmptyTranslations
 
             # header
             for line in self._header:
@@ -682,6 +682,6 @@ if __name__ == '__main__':
 #    LangFile.mergedToFile("", True)
 
 #   LangFile.Write (bak?)
-    LangFile.translationsToFile (langPathFileName + '.new', False, False)
+    LangFile.translationsToFile (langPathFileName + '.new')
     
     print_end(start)

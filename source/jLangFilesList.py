@@ -70,7 +70,7 @@ class jLangFilesList:
 
         self.collectFileNames ()
         
-    #--- translation ---
+    #--- langId ---
     
     @property
     def langId(self):

@@ -12,6 +12,8 @@ from datetime import datetime
 from TransMatchFileNames import TransMatchFileNames
 from TranslateLang import TranslateLang
 
+from jLangConfig import Config
+
 HELP_MSG = """
 Supports translation of joomla lang string to other language
 TranslateLangs supports the translation of a joomla ini file with
@@ -247,7 +249,14 @@ if __name__ == '__main__':
 	trgPath = os.path.join ('..', '.regression', 'de-DE')
 	#trgPath = os.path.join('..', '.sandbox', 'de-DE')
 	trgLangId = 'de-DE'
-	
+
+	cfgSrcPath = Config.baseSrcPath
+	if(len(cfgSrcPath) > 0):
+		srcPath = cfgSrcPath
+	cfgTrgPath = Config.baseTrgPath
+	if(len(cfgTrgPath) > 0):
+		trgPath = cfgTrgPath
+
 	for i, j in optlist:
 		if i == "-s":
 			srcPath = j
