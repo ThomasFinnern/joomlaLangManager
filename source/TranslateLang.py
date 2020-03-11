@@ -269,8 +269,10 @@ if __name__ == '__main__':
 #	SourceFile = ''
 #	StandardFile = ''
 #	SysFile = ''
-	SourceFile = '..\.sandbox\en-GB\com_contact.ini'
-	TargetFile = '..\.sandbox\de-DE\com_contact.ini'
+#	SourceFile = '..\.sandbox\en-GB\com_contact.ini'
+	SourceFile = '..\.regression\en-GB\com_contact.ini'
+#	TargetFile = '..\.sandbox\de-DE\com_contact.ini'
+	TargetFile = '..\.regression\de-DE\de-DE.com_admin.ini'
 
 	for i, j in optlist:
 		if i == "-s":

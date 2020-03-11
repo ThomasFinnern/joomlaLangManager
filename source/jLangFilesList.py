@@ -188,7 +188,7 @@ class jLangFilesList:
             else:
                 longCompareName = trgStartId + shortCompareName
                 if (longCompareName in self.__fileNames):
-                    matched = shortCompareName
+                    matched = longCompareName
 
         except Exception as ex:
             print(ex)
