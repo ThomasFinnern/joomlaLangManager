@@ -58,6 +58,9 @@ LeaveOut_05 = False
 
 # -------------------------------------------------------------------------------
 
+
+surplus_text = '; surplus / obsolete translations'
+
 # ================================================================================
 # LangFile
 # ================================================================================
@@ -235,7 +238,9 @@ class jLangFile:
 
                         # Comment or empty line
                         if (line.startswith(';') or len(line) < 1):
-                            nextItem.preLines.append(line)
+                            ' Own addition. do not keep'
+                            if (not surplus_text in line):
+                                nextItem.preLines.append(line)
                             continue
 
                         # --- translation split -----------------------

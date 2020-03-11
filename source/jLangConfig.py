@@ -27,7 +27,7 @@ class jLangConfig:
         self.__baseSrcPath = ""
         self.__baseTrgPath = ""
 
-        self.__allComparisionPaths = {}
+        self.__comparePaths = {} # compare multiple paths
 
         # ---------------------------------------------
         # assign variables from config file
@@ -85,6 +85,16 @@ class jLangConfig:
     def baseTrgPath(self, baseTrgPath):
         self.__baseTrgPath = baseTrgPath
 
+    # --- comparePaths ---
+
+    @property
+    def comparePaths(self):
+        return self.__comparePaths
+
+    @comparePaths.setter
+    def comparePaths(self, comparePaths):
+        self.__comparePaths = comparePaths
+
     # --------------------------------------------------------------------
     #
     # --------------------------------------------------------------------
@@ -127,18 +137,18 @@ class jLangConfig:
 
             #--- folder list ---------------------------------
 
-            self.__allComparisionPaths = {}
+            self.__comparePaths = {}
 
             if (sourcePath == 'jgerman_wip_all'):
 
                 options = configFile.options(sourcePath)
                 for option in options:
                     try:
-                        if ('sourceFolder' in option):
+                        if ('sourcefolder' in option):
                             sourceFolder = configFile.get(sourcePath, option)
-                        if ('targetFolder' in option):
+                        if ('targetfolder' in option):
                             targetFolder = configFile.get(sourcePath, option)
-                            self.__allComparisionPaths[sourceFolder] = targetFolder
+                            self.__comparePaths[sourceFolder] = targetFolder
                             print('All: sourcePath: ' + sourceFolder + ' targetPath: ' + targetFolder)
 
                     except:
@@ -146,7 +156,7 @@ class jLangConfig:
 
             else:
                 # standard
-                self.__allComparisionPaths [self.__baseSrcPath] = self.__baseTrgPath
+                self.__comparePaths [self.__baseSrcPath] = self.__baseTrgPath
                 print('All: sourcPath: ' + self.__baseSrcPath + ' targetPath: ' + self.__baseTrgPath)
 
         except Exception as ex:
