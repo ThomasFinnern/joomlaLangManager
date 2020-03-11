@@ -152,8 +152,8 @@ def TranslateLang (SourceFile, TargetFile):
 		# 
 		#--------------------------------------------------------------------
 
-		srcTranslations = source.translations()
-		trgTranslations = target.translations()
+		srcTranslations = source.translations
+		trgTranslations = target.translations
 
 		#--------------------------------------------------------------------
 		# read translations in order of source

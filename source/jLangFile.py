@@ -119,11 +119,11 @@ class jLangFile:
 
     @property
     def translations(self):
-        return self.___translations
+        return self.__translations
 
     @translations.setter
     def translations(self, translations):
-        self.___translations = translations
+        self.__translations = translations
 
     # --- surplusTranslations ---
 
@@ -291,16 +291,16 @@ class jLangFile:
         print('    >>> Enter get: ')
         print('       transId: "' + transId + '"')
 
-        _translation = ""
+        translation = ""
 
         try:
-            _translation = self.__translations[transId]
+            translation = self.__translations[transId]
 
         except Exception as ex:
             print(ex)
 
-        print('    <<< Exit yyy: ' + _translation)
-        return _translation
+        print('    <<< Exit yyy: ' + translation)
+        return translation
 
     # -------------------------------------------------------------------------------
     #
@@ -326,8 +326,8 @@ class jLangFile:
 #    def mergedToFile(self, newFileName=""):  # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
 #        print('    >>> Enter mergedToFile: ')
 #
-#        isCfgOverwriteSrcFiles = Config.isCfgOverwriteSrcFiles
-#        isCfgDoBackup = Config.isCfgOverwriteSrcFiles
+#        isCfgOverwriteSrcFiles = Config.isOverwriteSrcFiles
+#        isCfgDoBackup = Config.isDoBackup
 #
 #        isCreateResultFile = not isCfgOverwriteSrcFiles
 #        isDoBackup = isCfgOverwriteSrcFiles and isCfgDoBackup
@@ -435,8 +435,8 @@ class jLangFile:
 
         # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
 
-        isCfgOverwriteSrcFiles = Config.isCfgOverwriteSrcFiles
-        isCfgDoBackup = Config.isCfgOverwriteSrcFiles
+        isCfgOverwriteSrcFiles = Config.isOverwriteSrcFiles
+        isCfgDoBackup = Config.isDoBackup
 
         isCreateResultFile = not isCfgOverwriteSrcFiles
         isDoBackup = isCfgOverwriteSrcFiles and isCfgDoBackup
