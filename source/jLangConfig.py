@@ -22,6 +22,8 @@ class jLangConfig:
 
         self.__isWriteEmptyTranslations = False
         self.__isOverwriteSrcFiles = False
+        self.__isDoBackup = False
+
         self.__baseSrcPath = ""
         self.__baseTrgPath = ""
 
@@ -52,6 +54,16 @@ class jLangConfig:
     @isOverwriteSrcFiles.setter
     def isOverwriteSrcFiles(self, isOverwriteSrcFiles):
         self.__isOverwriteSrcFiles = isOverwriteSrcFiles
+
+    # --- isDoBackup ---
+
+    @property
+    def isDoBackup(self):
+        return self.__isDoBackup
+
+    @isDoBackup.setter
+    def isDoBackup(self, isDoBackup):
+        self.__isDoBackup = isDoBackup
 
     # --- baseSrcPath ---
 
@@ -87,17 +99,25 @@ class jLangConfig:
             print('iniFileName: ' + iniFileName)
             print('---------------------------------------------------------')
 
+            #--- define used segments -------------------------------
+
             configFile = configparser.ConfigParser()
             configFile.read(iniFileName)
 
             sourcePath = configFile['selection']['sourcePath']
             task = configFile['selection']['task']
 
+            #--- in selected segments ----------------------------------------------
+
             self.__isWriteEmptyTranslations = configFile.getboolean(task, 'isWriteEmptyTranslations', fallback=False)
             print('__isWriteEmptyTranslations: ', str(self.__isWriteEmptyTranslations))
 
             self.__isOverwriteSrcFiles = configFile.getboolean(sourcePath, 'isOverwriteSrcFiles', fallback=False)
             print('__isOverwriteSrcFiles: ', str(self.__isOverwriteSrcFiles))
+
+            self.__isDoBackup = configFile.getboolean(sourcePath, 'isDoBackup', fallback=False)
+            print('__isDoBackup: ', str(self.__isDoBackup))
+
 
             self.__baseSrcPath = configFile.get (sourcePath, 'sourceFolder')
             print('__baseSrcPath: ', str(self.__baseSrcPath))
