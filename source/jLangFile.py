@@ -65,40 +65,99 @@ LeaveOut_05 = False
 class jLangFile:
     """  collects lines of a joomla language file for read/write/update """
 
-    def __init__(self, langPathFileName):
-        self.langPathFileName = langPathFileName  # CVS modules file name with path
+    def __init__(self, langPathFileName=''):
+        self.__langPathFileName = langPathFileName  # CVS modules file name with path
 
-#        # toDo: remove file lines
- #       self._fileLines = []  # File lines to reconstruct the file in old order
-        self._translations = {}  # All translations
-        self._surplusTranslations = {}
-        self._langId = 'en-GB'  # lang ID
-        self._isSystType = False  # lang file type (normal/sys)
-        self._header = []  # Start comments on translation file
-        self._config = []  #
-        # self._f = []  # All translations
+        self.__header = []  # Start comments on translation file
+        self.__translations = {}  # All translations
+        self.__surplusTranslations = {}
+        self.__langId = 'de-DE' #'en-GB'  # lang ID
+        self.__isSystType = False  # lang file type (normal/sys)
+        # self.__f = []  # All translations
 
-        # ---------------------------------------------
-        # check input
-        # ---------------------------------------------
+        # load file if exists
+        if (len(langPathFileName)):
 
-        if not os.path.isfile(langPathFileName):
-            print('***************************************************')
-            print('!!! Language file not found !!! ? -p/-m ' + langPathFileName + ' ?')
-            print('***************************************************')
-            print(HELP_MSG)
-            sys.exit(1)
+            # ---------------------------------------------
+            # check input
+            # ---------------------------------------------
 
-        #		self._initLists()  # (later binding)
-        self.assignFileContent(self.langPathFileName)
+            if not os.path.isfile(langPathFileName):
+                print('***************************************************')
+                print('!!! Language file not found !!! ? -p/-m ' + langPathFileName + ' ?')
+                print('***************************************************')
+                print(HELP_MSG)
+                sys.exit(1)
+
+            self.assignFileContent(self.__langPathFileName)
+
+    # ---------------------------------------------
+    # properties
+    # ---------------------------------------------
+
+    # --- langPathFileName ---
+
+    @property
+    def langPathFileName(self):
+        return self.__langPathFileName
+
+    @langPathFileName.setter
+    def langPathFileName(self, langPathFileName):
+        self.__langPathFileName = langPathFileName
+
+    # --- header ---
+
+    @property
+    def header(self):
+        return self.__header
+
+    @header.setter
+    def header(self, header):
+        self.__header = header
+
+    # --- translations ---
+
+    @property
+    def translations(self):
+        return self.___translations
+
+    @translations.setter
+    def translations(self, translations):
+        self.___translations = translations
+
+    # --- surplusTranslations ---
+
+    @property
+    def surplusTranslations(self):
+        return self.__surplusTranslations
+
+    @surplusTranslations.setter
+    def surplusTranslations(self, surplusTranslations):
+        self.__surplusTranslations = surplusTranslations
+
+    # --- langId ---
+
+    @property
+    def langId(self):
+        return self.__langId
+
+    @langId.setter
+    def langId(self, langId):
+        self.__langId = langId
+
+    # --- isSystType ---
+
+    @property
+    def isSystType(self):
+        return self.__isSystType
+
+    @isSystType.setter
+    def isSystType(self, isSystType):
+        self.__isSystType = isSystType
 
     # ================================================================================
-    # extraction of file modules
+    # extraction of file translations
     # ================================================================================
-
-    #	def _initLists(self):
-    #		# read modules file and assign to lists
-    #		self.assignFileContent(self.langPathFileName)
 
     # -------------------------------------------------------------------------------
 
@@ -130,20 +189,20 @@ class jLangFile:
                 sys.exit(2)
 
             # reset
-            self._translations = {}  # All translations
+            self.__translations = {}  # All translations
             fileLines = []  # File lines to reconstruct the file in old order
 
-            # self._langId = 'en-GB'  # lang ID
+            # self.__langId = 'en-GB'  # lang ID
             if ('.sys.' in langPathFileName):
-                self._isSystType = False  # lang file type (normal/sys)
+                self.__isSystType = False  # lang file type (normal/sys)
             else:
-                self._isSystType = False  # lang file type (normal/sys)
+                self.__isSystType = False  # lang file type (normal/sys)
 
             # --------------------------------------------------------------------
             # read all lines
             # --------------------------------------------------------------------
 
-            self._header = []  # Start comments on translation file
+            self.__header = []  # Start comments on translation file
             isHeaderActive = True
             nextItem = jLangItem ()
 
@@ -163,7 +222,7 @@ class jLangFile:
                     if (isHeaderActive):
                         # Comment or empty line
                         if (line.startswith(';') or len(line) < 1):
-                            self._header.append(line)
+                            self.__header.append(line)
                         else:
                             # first item line
                             isHeaderActive = False
@@ -176,9 +235,6 @@ class jLangFile:
 
                         # Comment or empty line
                         if (line.startswith(';') or len(line) < 1):
-#                            prelines = nextItem.preLines
-#                            preLines.append(line)
-#                            nextItem.preLines.append(line)
                             nextItem.preLines.append(line)
                             continue
 
@@ -191,25 +247,25 @@ class jLangFile:
                         nextItem.translationText = translationParanthesis [1:-1]
 
                         # new element
-                        if (transId not in self._translations):
+                        if (transId not in self.__translations):
                             # todo: own class, save with line as id for telling lines od double entries
-                            self._translations[transId] = nextItem
+                            self.__translations[transId] = nextItem
                         else:
                             # Existing element
 
                             # Compare text
-                            if (self._translations[transId].translationText == nextItem.translationText):
+                            if (self.__translations[transId].translationText == nextItem.translationText):
                                 logText = "Existing element found in Line " + str(idx) + ": " + transId + " = " + \
-                                self._translations[transId]
+                                self.__translations[transId]
                             else:
                                 logText = "Existing mismatching element found in Line " + str(idx) + ":\r\n" \
-                                          + "1st: " + transId + " = " + self._translations[transId].translationText \
+                                          + "1st: " + transId + " = " + self.__translations[transId].translationText \
                                           + "2nd: " + transId + " = " + nextItem.translationText
                             print(logText)
 
                         nextItem = jLangItem()
 
-            print('file translations: ' + str(len(self._translations)))
+            print('file translations: ' + str(len(self.__translations)))
 
             # --- debug exit -----------------------
 
@@ -228,25 +284,8 @@ class jLangFile:
 
         return
 
-        # -------------------------------------------------------------------------------
-
-    def translations(self):
-        #    	print ('    >>> Enter yyy: ')
-        #    	print ('       XXX: "' + XXX + '"')
-        #
-        #    	ZZZ = ""
-        #
-        #    	try:
-        #
-        #
-        #    	except Exception as ex:
-        #    		print(ex)
-        #
-        #    	print ('    <<< Exit yyy: ' + ZZZ)
-        return self._translations
-
-        # -------------------------------------------------------------------------------
-        #
+    # -------------------------------------------------------------------------------
+    #
 
     def get(self, transId):
         print('    >>> Enter get: ')
@@ -255,7 +294,7 @@ class jLangFile:
         _translation = ""
 
         try:
-            _translation = self._translations[transId]
+            _translation = self.__translations[transId]
 
         except Exception as ex:
             print(ex)
@@ -271,7 +310,7 @@ class jLangFile:
         print('       translation: "' + translation.translationText + '"')
 
         try:
-            self._translations[transId] = translation
+            self.__translations[transId] = translation
 
         except Exception as ex:
             print(ex)
@@ -280,104 +319,57 @@ class jLangFile:
         return
 
 
-    #		ZZZ = determineZZZ (langPathFileName)
-    #		print ('ZZZ: ' + ZZZ)
 
-    # --------------------------------------------------------------------
-    # create base folder
-    # --------------------------------------------------------------------
-
-    # installPath = os.path.join (RightPath, ZZZ)
-    # print ('installPath: ' + installPath)
-    # if not os.path.exists(installPath):
-    #	os.makedirs(installPath)
-
-    # --------------------------------------------------------------------
-    # copy cexecuter folder
-    # --------------------------------------------------------------------
-
-    #		copyCexecuterFolder (langPathFileName, installPath)
-
-    # --------------------------------------------------------------------
-    # copy Macro folder
-    # --------------------------------------------------------------------
-
-    #		copyMacroFolder (langPathFileName, installPath)
-
-    # --------------------------------------------------------------------
-    # Create 02 export install folder
-    # --------------------------------------------------------------------
-
-    # dstPath = os.path.join(installPath, '02.' + ZZZ + '_export')
-    # if not os.path.exists(dstPath):
-    #	os.makedirs(dstPath)
-
-    # --------------------------------------------------------------------
-    # Create 01 install folder
-    # --------------------------------------------------------------------
-
-    # dstPath = os.path.join(installPath, '01.' + ZZZ)
-    # if not os.path.exists(dstPath):
-    #	os.makedirs(dstPath)
-
-    # --------------------------------------------------------------------
-    # copy 7z Files
-    # --------------------------------------------------------------------
-
-    #		copy7zFiles (langPathFileName, installPath)
-
-    # --------------------------------------------------------------------
-    #
-    # --------------------------------------------------------------------
-
-    # --------------------------------------------------------------------
-    #
-    # --------------------------------------------------------------------
-
-    ##-------------------------------------------------------------------------------
-    ## writes file with matching translations
-    # Old: safeToFile'
-    def mergedToFile(self, newFileName="", isCreateTempFile=True,
-                   isDoBackup=True):  # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
-        print('    >>> Enter mergedToFile: ')
-        #        print('       isOverwrite: "' + str(isOverwrite) + '"')
-        print('       isCreateTempFile: "' + str(isCreateTempFile) + '"')
-        print('       isDoBackup: "' + str(isDoBackup) + '"')
-
-        isSaved = False
-
-        try:
-
-            dstName = self.langPathFileName
-
-            # New name given
-            if (len(newFileName) > 0):
-                self.langPathFileName = newFileName
-
-            # remove extension
-            dstBaseName = os.path.splitext(self.langPathFileName)[0]
-            if (isCreateTempFile):
-                dstName = dstBaseName + '.tmp'
-            if (isDoBackup):
-                bckName = dstBaseName + '.bak'
-                shutil.copy2(self.langPathFileName, bckName)
-
-            print('writing to: "' + self.langPathFileName)
-
-            newLines = self.mergedTranlationLines()
-
-            file = open(self.langPathFileName, "w", encoding="utf-8", newline="\n")
-            for line in newLines:
-                file.write(line + '\n')
-            file.close()
-
-            isSaved = True
-
-        except Exception as ex:
-            print(ex)
-
-        print('    <<< Exit mergedToFile: ' + str(isSaved))
-        return isSaved
+#    ##-------------------------------------------------------------------------------
+#    ## writes file with matching translations
+#    # Old: safeToFile'
+#    def mergedToFile(self, newFileName=""):  # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
+#        print('    >>> Enter mergedToFile: ')
+#
+#        isCfgOverwriteSrcFiles = Config.isCfgOverwriteSrcFiles
+#        isCfgDoBackup = Config.isCfgOverwriteSrcFiles
+#
+#        isCreateResultFile = not isCfgOverwriteSrcFiles
+#        isDoBackup = isCfgOverwriteSrcFiles and isCfgDoBackup
+#
+#        print('       isOverwrite: "' + str(isCfgOverwriteSrcFiles) + '"')
+#        print('       isCreateResultFile: "' + str(isCreateResultFile) + '"')
+#        print('       isDoBackup: "' + str(isDoBackup) + '"')
+#
+#        isSaved = False
+#
+#        try:
+#
+#            dstName = self.__langPathFileName
+#
+#            # New name given
+#            if (len(newFileName) > 0):
+#                self.__langPathFileName = newFileName
+#
+#            # remove extension
+#            dstBaseName = os.path.splitext(self.__langPathFileName)[0]
+#            if (isCreateResultFile):
+#                dstName = dstBaseName + '.new'
+#            if (isDoBackup):
+#                bckName = dstBaseName + '.bak'
+#                shutil.copy2(self.__langPathFileName, bckName)
+#
+#            print('writing to: "' + self.__langPathFileName)
+#
+#            newLines = self.mergedTranlationLines()
+#
+#            file = open(self.__langPathFileName, "w", encoding="utf-8", newline="\n")
+#            for line in newLines:
+#                file.write(line + '\n')
+#            file.close()
+#
+#            isSaved = True
+#
+#        except Exception as ex:
+#            print(ex)
+#
+#        print('    <<< Exit mergedToFile: ' + str(isSaved))
+#        return isSaved
 
 #    # -------------------------------------------------------------------------------
 #    #
@@ -391,7 +383,7 @@ class jLangFile:
 #
 #        try:
 #            print('file lines: ' + str(len(self._fileLines)))
-#            print('file translations: ' + str(len(self._translations)))
+#            print('file translations: ' + str(len(self.__translations)))
 #
 #            idx = 0
 #            # check each line for existing translation
@@ -419,11 +411,11 @@ class jLangFile:
 #                oldTtranslation = translationParanthesis [1:-1]
 #
 #                # translation is deleted
-#                if (transId not in self._translations):
+#                if (transId not in self.__translations):
 #                    # mergedLines.append(line)
 #                    continue
 #
-#                newTranslation = self._translations[transId]
+#                newTranslation = self.__translations[transId]
 #                newLine = transId + ' = "' + newTranslation + '"'
 #
 #                mergedLines.append(newLine)
@@ -439,16 +431,18 @@ class jLangFile:
     ## writes file with collected translations
 
     def translationsToFile(self, newFileName=""):  
+        print('    >>> Enter mergedToFile: ')
+
         # ToDo: enum overwrite/createtempfile/backup ... isOverwrite=False,
 
-        isOverwriteSrcFiles = Config.isOverwriteSrcFiles
+        isCfgOverwriteSrcFiles = Config.isCfgOverwriteSrcFiles
+        isCfgDoBackup = Config.isCfgOverwriteSrcFiles
 
-        isCreateTempFile = not isOverwriteSrcFiles
-        isDoBackup = isOverwriteSrcFiles
+        isCreateResultFile = not isCfgOverwriteSrcFiles
+        isDoBackup = isCfgOverwriteSrcFiles and isCfgDoBackup
     
-        print('    >>> Enter mergedToFile: ')
-        #        print('       isOverwrite: "' + str(isOverwrite) + '"')
-        print('       isCreateTempFile: "' + str(isCreateTempFile) + '"')
+        print('       isOverwrite: "' + str(isCfgOverwriteSrcFiles) + '"')
+        print('       isCreateResultFile: "' + str(isCreateResultFile) + '"')
         print('       isDoBackup: "' + str(isDoBackup) + '"')
 
         isSaved = False
@@ -457,14 +451,14 @@ class jLangFile:
 
             # New name given
             if (len(newFileName) > 0):
-                self.langPathFileName = newFileName
+                self.__langPathFileName = newFileName
 
-            dstName = self.langPathFileName
+            dstName = self.__langPathFileName
 
             # remove extension
             dstBaseName = os.path.splitext(dstName)[0]
-            if (isCreateTempFile):
-                dstName = dstBaseName + '.tmp'
+            if (isCreateResultFile):
+                dstName = dstBaseName + '.new'
 
             # Backup: original must exist
             if (isDoBackup):
@@ -479,7 +473,7 @@ class jLangFile:
             for line in newLines:
                 file.write(line + '\n')
                 
-            if (len(self._surplusTranslations) > 0):
+            if (len(self.__surplusTranslations) > 0):
                 newLines = self.collectedObsoleteLines()
 
                 file.write('\n' + '; surplus / obsolete translations' + '\n')
@@ -507,18 +501,18 @@ class jLangFile:
         collectedLines = []
 
         try:
-            print('file translations: ' + str(len(self._translations)))
+            print('file translations: ' + str(len(self.__translations)))
 
             isWriteEmptyTranslations = Config.isWriteEmptyTranslations
 
             # header
-            for line in self._header:
+            for line in self.__header:
                 collectedLines.append(line)
 
             # translation lines
             idx = 0
             # check each line for existing translation
-            for transId, translation in self._translations.items():
+            for transId, translation in self.__translations.items():
                 idx += 1
 
                 # pre lines
@@ -556,12 +550,12 @@ class jLangFile:
         collectedLines = []
 
         try:
-            print('file translations: ' + str(len(self._surplusTranslations)))
+            print('file translations: ' + str(len(self.__surplusTranslations)))
 
             # translation lines
             idx = 0
             # check each line for existing translation
-            for transId, translation in self._surplusTranslations.items():
+            for transId, translation in self.__surplusTranslations.items():
                 idx += 1
 
                 # pre lines
@@ -617,7 +611,7 @@ def testDir(directory):
     return exists
 
 
-def print_header(start):
+def print__header(start):
     print('------------------------------------------')
     print('Command line:', end='')
     for s in sys.argv:
@@ -675,7 +669,7 @@ if __name__ == '__main__':
 
     start = datetime.today()
 
-    print_header(start)
+    print__header(start)
 
     # init class
     LangFile = jLangFile(langPathFileName)

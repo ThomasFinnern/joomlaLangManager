@@ -132,17 +132,15 @@ def TranslateLang (SourceFile, TargetFile):
 			f = open(TargetFile, "w")
 			f.close()
 
-		# create destination file
-		destinationFile  = TargetFile + '.new'
-		f = open(destinationFile, "w")
-		f.close()
-
 		# ToDo: Test empty files !!!
 		target = jLangFile(TargetFile)
-		destination = jLangFile(destinationFile)
+
+		#empty class
+		destination = jLangFile()
+		destination.langPathFileName = TargetFile
 		
 		# keep header
-		destination._header = target._header
+		destination.header = target.header
 
 		# --------------------------------------------------------------------
 		# read source file
@@ -184,13 +182,13 @@ def TranslateLang (SourceFile, TargetFile):
 			idx += 1
 		
 		# find obsolete / surplus translations
-		destination._surplusTranslations = {}
+		destination.surplusTranslations = {}
 
 		for transId in trgTranslations.keys():
 
 			# translation not existing source ?
 			if (not transId in srcTranslations):
-				destination._surplusTranslations [transId] = trgTranslations[transId]
+				destination.surplusTranslations [transId] = trgTranslations[transId]
 
 		#--------------------------------------------------------------------
 		# results to file
