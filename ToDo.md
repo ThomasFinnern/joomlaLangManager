@@ -1,5 +1,10 @@
 # Detect translations in source files
 
+- [ ] Insert empty with comment, Flag in file
+- [ ] Remove empty line before own comment
+
+
+
 ---
 - [ ] InsertNew: insert new translation IDs from FindTranslationIds into existing project lang files
 - [ ] Join project FindTranslationIds with InsertNew and MergeLang 
