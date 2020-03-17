@@ -241,6 +241,10 @@ class jLangFile:
                             ' Own addition. do not keep'
                             if (not surplus_text in line):
                                 nextItem.preLines.append(line)
+                            else:
+                                # remove blank line inserted before
+                                nextItem.preLines.pop()
+
                             continue
 
                         # --- translation split -----------------------
