@@ -55,7 +55,7 @@ LeaveOut_05 = False
 # ================================================================================
 
 class jLangFilesList:
-    """ Contains an translation item with references to empty lines and comments """
+    """ Contains a translation file with references to empty lines and comments """
 
 #    def __init__(self, translation, preLines, folderName):
 #        self.__translation =  translation #
@@ -228,7 +228,7 @@ class jLangFilesList:
 
         return bExist
 
-    def hasfolderName(self):
+    def hasFolderName(self):
         bExist = True
         if (len(self.__folderName) < 1):
             bExist = True

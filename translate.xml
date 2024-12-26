@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+
+		<field
+				name="selectSourceLangId"
+				type="text"
+				label="COM_LANG4DEV_TRANS_SOURCE_LANG_ID"
+				description="COM_LANG4DEV_TRANS_SOURCE_LANG_ID_DESC"
+				default="en-GB"
+				class="readonly"
+		/>
+
+		<field
+				name="selectTargetLangId"
+				type="text"
+				label="COM_LANG4DEV_TRANS_TARGET_LANG_ID"
+				description="COM_LANG4DEV_TRANS_TARGET_LANG_ID_DESC"
+				default="de-DE"
+				class="readonly"
+		/>
+
+		<field
+				name="createLangId"
+				type="text"
+				label="COM_LANG4DEV_CREATE_LANG_ID"
+				description="COM_LANG4DEV_CREATE_LANG_ID_DESC"
+				default="nn-NN"
+		/>
+
+		<!-- project selection -->
+		<field
+				id="SelectProject"
+				name="SelectProject"
+				type="ProjectSelect"
+				label="COM_RSGALLERY2_SPECIFY_GALLERY_LABEL"
+				description="COM_RSGALLERY2_SPECIFY_GALLERY_DESC"
+				required="true"
+		/>
+
+
+		<!-- sub project selection -->
+		<field
+			id="SelectSubproject"
+			name="SelectSubproject"
+			type="SubprojectsListField"
+			label="COM_LANG4DEV_SELECT_SUB_PROJECT"
+			description="COM_LANG4DEV_SELECT_SUB_PROJECT_DESC"
+			required="true"
+	/>
+
+
+
+</form>

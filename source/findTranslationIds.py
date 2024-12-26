@@ -349,7 +349,7 @@ def print_end(start):
 # ================================================================================
 
 if __name__ == '__main__':
-    optlist, args = getopt.getopt(sys.argv[1:], 's:f:y:12345h')
+    optlist, args = getopt.getopt(sys.argv[1:], 'c:f:y:12345h')
 
     #	SourceFile = ''
     #	StandardFile = ''
@@ -389,10 +389,16 @@ if __name__ == '__main__':
     # iterate over args and create a path list        
 
     # dummy test constant
+    # searchPaths = [
+    #     "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\administrator\\components\\com_rsgallery2",
+    #     "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\components\\com_rsgallery2",
+    #     "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\media\\com_rsgallery2",
+    # ]
+    #
     searchPaths = [
-        "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\administrator\\components\\com_rsgallery2",
-        "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\components\\com_rsgallery2",
-        "f:\\Entwickl\\rsgallery2\\RSGallery2_J-4\\media\\com_rsgallery2",
+        "d:\\Entwickl\\2022\\_gitHub\\RSGallery2_J4\\administrator\\components\\com_rsgallery2",
+        "d:\\Entwickl\\2022\\_gitHub\\RSGallery2_J4\\components\\com_rsgallery2",
+        "d:\\Entwickl\\2022\\_gitHub\\RSGallery2_J4\\media\\com_rsgallery2",
     ]
 
     if (len(args)):
